@@ -1,4 +1,3 @@
-Evil code
-=========
+Code for the [evil code](evil.pdf) book.
 
-All as a repo.
+[![tex/src/herGoogles.png](evil.pdf).
