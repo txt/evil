@@ -4,4 +4,4 @@
 
 Available in bookstores, 2016
 
-[![](tex/img/herGoggles.png)](tex/evil.pdf)
+[![](tex/img/herGoggles.png)](tex/evil.pdf) pic: [Steampunk](https://www.steampunkgoggles.com/)
