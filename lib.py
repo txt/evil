@@ -1,41 +1,11 @@
 from __future__ import print_function, unicode_literals
 from __future__ import absolute_import, division
 
-"""
-# Lib: Standard Utilities
 
-Standard imports: used everywhere.
-
-## Code Standards
-
-Narrow code (52 chars, max); use ``i'', not ``self'', set indent to two characters, 
-
-In a repo (or course). Markdown comments (which means we can do tricks like auto-generating this
-documentation from comments in the file).
-
-Not Python3, but use Python3 headers.
-
-good reseraoiuces for advance people: Norving's infrenqencly asked questions
-
-David Isaacon's Pything tips, tricks, and Hacks.http://www.siafoo.net/article/52
-
-Environemnt that supports matplotlib, scikitlearn. Easy to get there.
-
-Old school: install linux. New school: install virtualbox. Newer school: work online.
-
-To checn if you ahve a suseful envorunment, try the following (isntall pip, matpolotlib, scikitlearn)
-
-Learn Python.
-
-Learn tdd
-
-Attitude to coding. not code byt"set yourself up to et rapid feedback on some issue"
-
-
-"""
 import random, pprint, re, datetime, time,traceback
 from contextlib import contextmanager
 import pprint,sys
+
 """
 
 Unit test engine, inspired by Kent Beck.
