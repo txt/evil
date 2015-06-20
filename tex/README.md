@@ -1,1 +1,1 @@
-Build files for the [evil code](../evil.pdf) book.
+Build files for the [evil code](evil.pdf) book.

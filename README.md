@@ -1,3 +1,3 @@
-Code for the [evil code](evil.pdf) book.
+Code for the [evil code](tex/evil.pdf) book.
 
-[![](tex/img/herGoggles.png)](evil.pdf)
+[![](tex/img/herGoggles.png)](tex/evil.pdf)

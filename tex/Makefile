@@ -18,9 +18,9 @@ gitting: ;cd ..; $(Make) gitting
 timm   : ;cd ..; $(Make) timm
 
 publish : dirs all
-	cp $(HOME)/tmp/$(Src).pdf ../$(Name).pdf
-	chmod a+r ../$(Name).pdf
-	#scp -p pdf/$(Name).pdf stuff@ttoy.net:menzies.us/pdf
+	cp $(HOME)/tmp/$(Src).pdf $(Name).pdf
+	chmod a+r $(Name).pdf
+	#scp -p $(Name).pdf stuff@ttoy.net:menzies.us/pdf
 
 one : dirs tex done publocal
 
