@@ -1,27 +1,39 @@
+#!/bib/bash
+
 cat <<'EOF'
-             /^\/^\ 
-           _|__|  O|
-  \/     /~     \_/ \ 
-   \____|__________/  \ 
-          \_______      \ 
-                  `\     \                 \ 
-                    |     |                  \ 
-                   /      /                    \ 
-                  /     /                       \\ 
-                /      /                         \ \ 
-               /     /                            \  \ 
-             /     /             _----_            \   \ 
-            /     /           _-~      ~-_         |   |
-           (      (        _-~    _--_    ~-_     _/   |
-            \      ~-____-~    _-~    ~-_    ~-_-~    /
-              ~-_           _-~          ~-_       _-~   - jurcy -
-                 ~--______-~                ~-___-~
+   .-.
+  (_" \
+   /`\ \
+  ^   ) )             Welcome to
+     ( (              Timm's Python
+      ) )             environment, v1.0
+     ( (
+      \ \
+ jgs   `\|
 
-Welcome to Timm's Python environment, v1.0
+"The world is a dangerous place to live; 
+ not because of the people who are evil, 
+ but because of the people who don't do anything about it."
+ --- Albert Einstein
 
-The world is a dangerous place to live; 
-not because of the people who are evil, 
-but because of the people who don't do anything about it.
---- Albert Einstein
 EOF
-alias python="/usr/bin/python -B3 "
+
+dirsWithPython() {
+    for x in $(find . -name '*.py' | grep -v \.git); do
+       dirname $x
+    done | sort | uniq
+}
+# may file on pathname with spaces
+fullname() {  (cd "$1";  pwd; ) }
+
+path=""
+for x in $(dirsWithPython); do
+    if [ -z "$path" ]; then
+	path="$(fullname "$x")"
+    else
+	path="$path:$(fullname "$x")"
+    fi
+done
+
+echo alias python="PYTHONPATH='$path' /usr/bin/python -B3 "
+alias python="PYTHONPATH='$path' /usr/bin/python -B3 "

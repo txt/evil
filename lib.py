@@ -1,11 +1,20 @@
-from __future__ import print_function, unicode_literals
+from __future__ import print_function
 from __future__ import absolute_import, division
-
-
-import random, pprint, re, datetime, time,traceback
+import random, re, datetime, time
 from contextlib import contextmanager
 import pprint,sys
 
+from base import *
+
+@setting
+def LIB(): return o(
+  seed = 1,
+  has  = o(decs = 3,
+           skip="_",
+           wicked=True),
+  show = o(indent=2,
+           width=50)
+)
 """
 
 Unit test engine, inspired by Kent Beck.
@@ -33,56 +42,13 @@ class unittest:
   def report(i,e,test):
     print(traceback.format_exc())
     print(unittest.score(),':',test.__name__, e)
-"""
 
-Simple container class (offers simple initialization).
-
-"""
-class o:
-  def __init__(i,**d)    : i + d
-  def __add__(i,d)       : i.__dict__.update(d)
-  def __setitem__(i,k,v) : i.__dict__[k] = v
-  def __getitem__(i,k)   : return i.__dict__[k]
-  def __repr__(i)        : return str(i.items())
-  def items(i,x=None)    :
-    x = x or i
-    if isinstance(x,o):
-      return [(k,i.items(v)) for
-              k,v in x.__dict__.values()
-              if not k[0] == "_" ]
-    else: return x
-"""
-
-The settings system.
-
-"""
-the = o()
-
-def setting(f):
-  name = f.__name__
-  def wrapper(**d):
-    tmp = f()
-    tmp + d
-    the[name] = tmp
-    return tmp
-  wrapper()
-  return wrapper
-
-
-@setting
-def LIB(): return o(
-    seed =  1,
-    has  = o(decs = 3,
-             skip="_",
-             wicked=True),
-    show = o(indent=2,
-             width=80)
-)
 #-------------------------------------------------
 r    = random.random
 any  = random.choice
 seed = random.seed
 isa  = isinstance
+fun  = lambda x: x.__class__.__name__ == 'function'
 
 def lt(x,y): return x < y
 def gt(x,y): return x > y
@@ -110,11 +76,6 @@ def say(*lst):
 def g(lst,f=3):
   return map(lambda x: round(x,f),lst)
 #-------------------------------------------------
-def show(x, indent=None, width=None):  
-  print(pprint.pformat(has(x),
-            indent= indent or the.LIB.show.indent,
-            width = width  or the.LIB.show.width))
-
 
 def cache(f):
   name = f.__name__
