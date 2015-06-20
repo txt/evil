@@ -1,3 +1,6 @@
-Code for the [evil code](tex/evil.pdf) book.
+# Evil code for wicked problems. Part4 
 
-[![](tex/img/herGoggles.png)](tex/evil.pdf)
+A programmer's guide to world domination- in Python.
+
+
+Read the book: [![](tex/img/herGoggles.png)](tex/evil.pdf)
