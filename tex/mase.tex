@@ -1,0 +1,355 @@
+\documentclass[9pt,twocolumn]{article}
+
+
+
+
+
+\usepackage{graphicx}
+\usepackage{natbib}
+\bibliographystyle{unsrtnat}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+    \usepackage{xltxtra,xunicode}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Mapping=tex-text,Scale=MatchLowercase}
+  \newcommand{\euro}{€}
+  \fi
+  \usepackage{wrapfig}
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\ifxetex
+  \usepackage[setpagesize=false, % page size defined by xetex
+              unicode=false, % unicode breaks when used with xetex
+              xetex]{hyperref}
+\else
+  \usepackage[unicode=true]{hyperref}
+  \fi
+
+%  \usepackage[T1]{fontenc}
+\renewcommand{\rmdefault}{ptm}
+\usepackage{fourier}
+
+\usepackage[scaled=0.875]{helvet} % ss
+\renewcommand{\ttdefault}{pcr} %tt
+
+\usepackage[dvipsnames]{xcolor}
+\hypersetup{breaklinks=true,
+            bookmarks=true,
+            pdfauthor={},
+            pdftitle={},
+            colorlinks=true,
+            citecolor=blue,
+            urlcolor=blue,
+            linkcolor=magenta,
+            pdfborder={0 0 0}}
+\urlstyle{same}  % don't use monospace font for urls
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+
+\usepackage{lastpage}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+
+\rhead{} \chead{}\lhead{}
+\cfoot{}
+
+\fancyfoot[LE,RO]{page~\thepage~of~\pageref{LastPage}}
+\fancyfoot[LO,RE]{\rotatebox[origin=c]{180}{\copyright} 2015, Tim Menzies, sort of.}
+
+
+
+  \renewcommand{\footrulewidth}{0.4pt}
+
+\date{}
+%\usepackage{times}
+\usepackage[margin=0.65in,landscape]{geometry}
+
+\makeatletter
+\newcommand{\verbatimfont}[1]{\def\verbatim@font{#1}}%
+\makeatother
+\usepackage{fancyvrb}
+
+
+\usepackage[shortlabels]{enumitem}
+\setlist{nosep}
+
+\DefineVerbatimEnvironment%
+  {MyVerbatim}{Verbatim}
+  {numbers=right,numbersep=2mm,firstnumber=last,stepnumber=1,xleftmargin=12pt,xrightmargin=24pt,
+   frame=lines,framerule=0.1mm,fontsize=\scriptsize,rulecolor=\color{Gray}}
+
+  \definecolor{britishracinggreen}{rgb}{0.0, 0.26, 0.15}
+  \definecolor{bulgarianrose}{rgb}{0.28, 0.02, 0.03}
+  \definecolor{coolblack}{rgb}{0.0, 0.18, 0.39}
+  \definecolor{mygreen}{rgb}{0,0.6,0}
+  \definecolor{mymauve}{rgb}{0.58,0,0.82}
+  
+  \usepackage{listings}
+
+  \colorlet{shadecolor}{gray!8}
+  \lstset{% general command to set parameter(s)
+    language=Python,
+    firstnumber=last,
+    xleftmargin=6pt,
+    xrightmargin=12pt,
+    numberblanklines=false,
+    backgroundcolor = \color{shadecolor},
+    numbers=right, stepnumber=1, numberstyle=\tiny, numbersep=1pt,
+    basicstyle=\linespread{0.90}\scriptsize\ttfamily, % print whole listing small
+    keywordstyle=\color{coolblack}\bfseries,
+    emphstyle=\ttb\color{bulgarianrose},    % Custom highlighting style
+    stringstyle=\color{britishracinggreen},
+    commentstyle=\color{red},
+    stringstyle=\color{mygreen},
+    %frame=tb,framerule=0.5pt,rulecolor=\color{Gray},
+      showstringspaces=false,
+    } % no special string spaces
+
+ \newcommand{\said}[1]{\citet*{#1}}
+
+
+ \hypersetup{linkcolor=black}
+\setcounter{tocdepth}{2}
+
+\newcommand{\eq}[1]{Equation~\ref{eq:#1}}
+\newcommand{\bi}{\begin{itemize}}
+\newcommand{\ei}{\end{itemize}}
+\newcommand{\be}{\begin{enumerate}}
+\newcommand{\ee}{\end{enumerate}}
+\newcommand{\tion}[1]{\textsection\ref{sec:#1}}
+\newcommand{\fig}[1]{Figure~\ref{fig:#1}}
+
+\setlength{\columnsep}{10mm}
+\setlength{\columnseprule}{0.1pt}
+
+\renewcommand{\headwidth}{10in}
+%% \makeatletter
+%%     \def\headrule{{\if@fancyplain\let\headrulewidth\plainheadrulewidth\fi
+%%         \hrule\@height\headrulewidth\@width 7in \vskip-\headrulewidth}}
+%% \makeatother
+
+%% \makeatletter
+%%     \def\footrule{{\if@fancyplain\let\headrulewidth\plainheadrulewidth\fi
+%%         \hrule\@height\headrulewidth\@width 7in \vskip-\headrulewidth}}
+%% \makeatother
+
+\usepackage{tocloft}
+
+\setlength{\cftbeforesecskip}{6pt}
+
+\usepackage{moresize}
+
+
+
+\newcommand{\parting}[2]{\newpage
+\onecolumn
+\clearpage
+\fancyhead[LE,RO]{}
+\fancyhead[LO,RE]{}
+\vspace*{\fill}
+\begin{center}
+  \addcontentsline{toc}{section}{#1~~~#2}
+  \begin{minipage}{.6\textwidth}
+    \begin{center}
+      { \fontsize{450}{450} \selectfont {\bf #1}}\\~\\ \LARGE{(#2)}\end{center}
+\end{minipage}
+\end{center}
+\vfill % equivalent to \vspace{\fill}
+\clearpage
+\fancyhead[LE,RO]{\slshape \rightmark}
+\fancyhead[LO,RE]{\slshape \leftmark}
+\twocolumn
+}
+  
+  
+\begin{document} 
+
+%\renewcommand{\verbatim@font}{\ttfamily\small}
+
+\onecolumn
+\title{
+  {\bf \HUGE{Evil Code for Wicked Problems, part 4}}\\~\\~\\
+    \fcolorbox{red}{white}{\includegraphics[width=6.5in]{img/herGoggles.png}}\\
+    \Large{A Research Programmer's Guide to World Domination-- in Python.}\\
+    \Large{a.k.a. {\em Lecture Notes, Automated
+  SE}, CS, NC State, Fall'15}}
+\author{by Tim Menzies \\\#attentionDeficitSquirrel\\Download:
+  see {\tt book.pdf} at https://github.com/txt/evil\\This version: \today}
+   
+
+\maketitle
+\thispagestyle{empty}
+
+\clearpage
+\small
+\twocolumn
+
+\pagestyle{fancy}
+
+
+
+ \subsection*{About this book} This book is a  ``how to'' guide about model-based reasoning using
+   data mining and search-based tools (with examples taken from software engineering).
+   It is intended for graduate  students taking
+  a one semester subject in advanced programming methods as
+  well as researchers developing the next generation
+  of model-based reasoning tools.  
+
+  Using Python 2.7, the book builds (from the ground up) numerous
+  tiny tools that can tame seemingly complex
+  tasks. The combined toolkit, called RINSE, offers four kinds of functionality:
+  \be
+  \item
+    It {\em \underline{r}epresents}  models using domain-specific languages;
+    \item It supports
+    {\em \underline{in}ference} across the multiple goals of those models using multi-objective optimization.
+    \item It shows how to succinctly {\em \underline{s}ummarize} that inference  using data miners;
+    \item It has  many tools for the
+   {\em \underline{e}valuation} of different inference methods. 
+   \ee
+   
+   RINSE is a not some shiny  end-user click-and-point GUI package.
+   Rather, it is a starter-kit that demonstrates an novel  model-based approach to problem solving where programmers
+   mix and match and extend data miners and multi-objective optimizers.
+
+   RINSE was written using the mantra ``less is more''. Whenever it was found that small parts of the
+   the code handled most 
+   of the functionality, then the extra functionality was ejected. This resulted in a (very) small code base
+   which can be readily browsed, learned, taught, and changed.
+
+
+   \vfill
+
+
+   \subsection*{Content Advisory }
+\begin{wrapfigure}{r}{1.5in}
+  \includegraphics[width=1.5in]{img/shark.jpg}
+  \end{wrapfigure}
+This book contains strong language, weakly typed (and tapped with glee).
+
+This book may contain excessive or gratutious fun--
+as well as ideas that some readers may (or may not) find disturbing.
+This book does not necessarily 
+believed or endorse those ideas- but plays with them anyway
+(and asks you to do the same).
+
+This book may include heresies, not suitable for anyone  who believes in established wisdom, without
+adequate experimentation. It is
+intended for mature audiences only; i.e.  those
+old enough to know there is much left to know. 
+
+This book may (or may not) contain peanuts or tree nut products.
+
+Batteries not included.
+
+\newpage
+
+\tableofcontents
+
+\newpage
+
+   
+\subsection*{Source Code Availability and Copyleft}
+To download the RINSE code, see http://github.com/txt/mase.
+The software associated with this book
+is free and unencumbered and released into the public domain. 
+
+Anyone is free to copy, modify, publish, use, compile, sell, or
+distribute this software, either in source code form or as a compiled
+binary, for any purpose, commercial or non-commercial, and by any
+means.
+
+In jurisdictions that recognize copyright laws, the author or authors
+of this software dedicate any and all copyright interest in the
+software to the public domain. We make this dedication for the benefit
+of the public at large and to the detriment of our heirs and
+successors. We intend this dedication to be an overt act of
+relinquishment in perpetuity of all present and future rights to this
+software under copyright law.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
+
+For more information, please refer to http://unlicense.org
+
+\vfill
+
+   \subsection*{About the Author}
+
+\begin{wrapfigure}{r}{1.5in}
+\includegraphics[width=1.5in]{img/tim.png}
+\end{wrapfigure}
+Tim Menzies (Ph.D., UNSW, 1995, http://menzies.us) is a full Professor in CS at North Carolina State University where he teaches software engineering and automated software engineering. His research relates to synergies between human and artificial intelligence, with particular application to data mining for software engineering.
+
+In his career, he has been a lead researcher on projects for NSF, NIJ, DoD, NASA, USDA, as well as joint research work with private companies.
+He is the author of over 230 referred publications; and is one of the 100 most cited authors in software engineering out of over 80,000 researchers.
+
+Prof. Menzies is an associate editor of IEEE
+Transactions on Software Engineering, Empirical
+Software Engineering and the Automated Software
+Engineering Journal. His community service includes
+co-founder of the PROMISE project (storing data for repeatable SE
+experiments);
+co-program chair for the 2012 conference on Automated SE and the 2015
+New Ideas and Emerging Research track at the International Conference on SE;
+and 
+co-general chair for 2016 International Conference on Software Maintenance and Evolution.
+
+Prof. Menzies can be contacted at \verb!tim.menzies@gmail.com!.
+
+
+
+
+\newpage
+
+
+
+
+%\renewcommand\contentsname{}
+
+
+
+\parting{A}{An Introduction}
+\input{evil}
+\newpage
+\input{reprog}
+
+
+\subsection*{The GREAT SECRET}
+
+\subsection*{Example}
+
+brook's law.  DSL in python of CM. data mining.
+
+\parting{B}{Before we begin}
+
+\input{settingup}
+\input{lib}
+
+\section{Pandoc with citeproc-hs}\label{pandoc-with-citeproc-hs}
+
+\said{item3}
+
+\bibliography{refs.bib}
+\end{document}
