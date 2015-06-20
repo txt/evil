@@ -1,5 +1,5 @@
 Src=mase
-Name=15how
+Name=evil
 BibDir=.
 Bib=  $(BibDir)/refs.bib
 PdfOut=../../img
@@ -7,6 +7,8 @@ PdfOut=../../img
 .PHONY: all typo commit update status gitting timm publish one view open publocal done dirs clean tex texs one embedfonts bib
 
 all : dirs tex bib  tex tex embedfonts done publocal
+
+Make = $(MAKE) --no-print-directory #
 
 typo   : ;cd ..; $(Make) typo
 commit : ;cd ..; $(Make) commit
@@ -16,9 +18,9 @@ gitting: ;cd ..; $(Make) gitting
 timm   : ;cd ..; $(Make) timm
 
 publish : dirs all
-	cp $(HOME)/tmp/$(Src).pdf pdf/$(Name).pdf
-	chmod a+r pdf/$(Name).pdf
-	scp -p pdf/$(Name).pdf stuff@ttoy.net:menzies.us/pdf
+	cp $(HOME)/tmp/$(Src).pdf ../$(Name).pdf
+	chmod a+r ../$(Name).pdf
+	#scp -p pdf/$(Name).pdf stuff@ttoy.net:menzies.us/pdf
 
 one : dirs tex done publocal
 
