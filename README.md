@@ -2,6 +2,6 @@
 
 [A programmer's guide to world domination- in Python.](tex/evil.pdf)
 
-(a work in progress)
+(under construction: to be released, August 15 2015).
 
 [![](tex/img/herGoggles.png)](tex/evil.pdf)
