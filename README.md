@@ -1,3 +1,3 @@
 Code for the [evil code](evil.pdf) book.
 
-![](tex/img/herGoogles.png)
+![](tex/img/herGoggles.png)
