@@ -35,5 +35,9 @@ for x in $(dirsWithPython); do
     fi
 done
 
-echo alias python="PYTHONPATH='$path' /usr/bin/python -B3 "
-alias python="PYTHONPATH='$path' /usr/bin/python -B3 "
+py="PYTHONPATH='$path' /usr/bin/python -B3 "
+alias python="$py "
+
+watch() {
+    rerun "$py $1.py"
+}

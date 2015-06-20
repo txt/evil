@@ -1,12 +1,10 @@
 from __future__ import print_function
 from __future__ import absolute_import, division
-import random, re, datetime, time
+import random, re, datetime, time,pprint,sys
 from contextlib import contextmanager
-import pprint,sys
-
 from base import *
 
-@setting
+@setting #########################################
 def LIB(): return o(
   seed = 1,
   has  = o(decs = 3,
@@ -14,7 +12,7 @@ def LIB(): return o(
            wicked=True),
   show = o(indent=2,
            width=50)
-)
+) ################################################
 """
 
 Unit test engine, inspired by Kent Beck.
