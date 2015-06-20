@@ -27,4 +27,4 @@ timm:  # <== change to your name
 tests: *ok.py
 	@$(foreach f,$^,\
              printf "\n========= $f =========\n\n";\
-             python $f;)
+             python -3B $f;)
