@@ -9,6 +9,8 @@ def DSL(): return o(
 def val(x): return x.val() if isa(x,Thing) else  x
 
 class Thing:
+  def __init__(i,txt,init=0):
+    i.val,i.txt = init,txt
   def __add__( i, j)  : return i.val() +  val(j)
   def __sub__( i, j)  : return i.val() -  val(j)
   def __mul__( i, j)  : return i.val() +  val(j)
