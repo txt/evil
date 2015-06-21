@@ -73,6 +73,19 @@ def say(*lst):
 
 def g(lst,f=3):
   return map(lambda x: round(x,f),lst)
+
+def rlist(x,tab=".. "):
+  def worker(x,lvl=0):
+    if isinstance(x,(list,tuple)):
+      for y in x:
+        for z in worker(y,lvl+1):
+          yield lvl,z
+    else:
+      if fun(x): x = x.__name__
+      yield lvl,x
+  for lvl,z in worker(x):
+    print(tab*lvl,z)  
+     
 #-------------------------------------------------
 
 def cache(f):

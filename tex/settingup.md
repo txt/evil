@@ -448,3 +448,8 @@ Domain specific languages
 + Generate some pretty print python (2 space indent)
 
 
+###
+
+cotnextmanager examples (the tree deaing is nice.
+http://preshing.com/20110920/the-python-with-statement-by-example/
+http://preshing.com/20110924/timing-your-code-using-pythons-with-statement/

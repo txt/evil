@@ -1,3 +1,6 @@
+# A sample gitignore file.
+# To use, cp to root of repo.
+
 # anything in etc/local is NOT for the repo
 *etc/local*
 

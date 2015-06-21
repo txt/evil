@@ -22,6 +22,8 @@ def has(x):
   if isa(x,o): return {"o": has(x.__dict__)}
   return x
 
+def pretty(x): print(pprint.pformat(x))
+
 def show(x, indent=None, width=None):  
   print(pprint.pformat(has(x),
             indent= indent or the.LIB.show.indent,
