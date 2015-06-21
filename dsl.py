@@ -18,16 +18,15 @@ def pow(x,y): return x**y
 
   
 # amke this the roor of all
-class Thing:
+class Thing(object):
   def __init__(i,txt,init=100,model=None):
     i.model = model or Model.latest()
     i.txt =txt
     i.model.add(i)
-    i.equation= init
+    i.eq = init
   def __repr__(i):
     return "%s=%s" % (i.txt, i.equation)
-  def __iadd__(i,eq):
-    i.equation = eq
+  def __iadd__(i,eq): i.eq = eq 
   def __add__( i,j): return Eq(i,j,add)
   def __sub__( i,j): return Eq(i,j,sub)
   def __mul__( i,j): return Eq(i,j,mul)
@@ -88,26 +87,39 @@ class Eq:
     else:
       return x
 
-class Stock(Thing): pass
+class Stock(Thing):
+  def __init__(i,txt,init=100,model=None):
+    super(Stock, self).__init__(txt,init,model)
+    i.ins. i.outs = [],[]
+  def __iadd__(i,eq):
+    _,stock,flow=eq
+    i.ins += [(flow,stock)]
+  def __isub__(i,eq):
+    _,stock,flow=eq
+    i.outs = [(flow,stock)]
+
 class Flow(Thing): pass
 class Auxillary(Thing): pass
 
 def brooksLaw(w=None):
   with model("Brooks' Law",w) as (m,S,F,A):
-    a     = F("assimilationRate")
+    aR     = F("assimilationRate")
     c     = A("communicationOverhead")
-    d     = S("developedSoftware")
-    ep    = S("experiencedPersonnel")
+    d     = S("developedSoftware",0)
+    ep    = S("experiencedPersonnel",20)
     ept   = A("experiencedPersonnelNeeded4Training")
     nprod = A("nominalProductity")
     np    = S("newPersonnel")
-    por   = F("personnelAllocationRate")
+    poR   = F("personnelAllocationRate")
     ps    = A("plannedSoftware")
-    sd    = F("softwareDevelopmentRate")
+    sdR    = F("softwareDevelopmentRate")
     sr    = S("source",1e32)
     t     = A("trainingOverhead")
     r     = S("requirements")
-    d    += r * sd
-    sd   += np * np * ep * c
+    d    += r * sdR
+    ep   += np * aR
+    aR   += np/20
+    np   += po 
+    sdR   += np * np * ep * c
   return m    
 
