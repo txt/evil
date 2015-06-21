@@ -41,7 +41,8 @@ alias python="$py "
 
 ##################
 if [ "etc/gitignore" -nt ".gitignore" ]; then
-     cp etc/gitignore .gitignore
+    cp etc/gitignore .gitignore
+    git add .gitignore
 fi
 
 ##################

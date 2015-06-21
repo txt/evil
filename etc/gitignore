@@ -1,0 +1,24 @@
+# anything in etc/local is NOT for the repo
+*etc/local*
+
+# ignore temp files from some editors
+\#*
+
+# ingore python compiled files
+*.pyc
+
+# ignore latex temporary files
+*.acn
+*.acr
+*.aux
+*.idx
+*.glg
+*.glo
+*.gls
+*.ilg
+*.ind
+*.ist
+*.lof
+*.out
+*.log
+*.toc
