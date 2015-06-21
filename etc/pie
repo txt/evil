@@ -18,10 +18,11 @@ cat <<'EOF'
 
 EOF
 
+################
 dirsWithPython() {
-    for x in $(find . -name '*.py' | grep -v \.git); do
-       dirname $x
-    done | sort | uniq
+  for x in $(find . -name '*.py' |grep -v \.git);do
+      dirname $x
+  done | sort | uniq
 }
 # may file on pathname with spaces
 fullname() {  (cd "$1";  pwd; ) }
@@ -38,6 +39,12 @@ done
 py="PYTHONPATH='$path' /usr/bin/python -B3 "
 alias python="$py "
 
+##################
+if [ "etc/gitignore" -nt ".gitignore" ]; then
+     cp etc/gitignore .gitignore
+fi
+
+##################
 watch() {
     rerun "$py $1.py"
 }
