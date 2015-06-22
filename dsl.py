@@ -17,7 +17,7 @@ class Stock(Thing): pass
 
 class Model:
   def run(i,steps=100):
-    next = lambda d: o() + {k:v for k,v in d}
+    next = lambda d: o(d.__dict__.copy())
     i.data = i.vars()
     tnow = next(i.data.__dict__)
     yield 0,tnow
