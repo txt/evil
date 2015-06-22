@@ -7,11 +7,11 @@ Simple container class (offers simple initialization).
 
 """
 class o:
-  def __init__(i,**d)    : i + d
-  def __add__(i,d)       : i.__dict__.update(d)
-  def __setitem__(i,k,v) : i.__dict__[k] = v
+  def __init__(i,**d): i + d
+  def __repr__(i)  : return str(has(i))
+  def __add__(i,d) : i.__dict__.update(d); return i
   def __getitem__(i,k)   : return i.__dict__[k]
-  def __repr__(i)        : return str(has(i))
+  def __setitem__(i,k,v) : i.__dict__[k] = v
 
 def has(x):
   isa = isinstance
