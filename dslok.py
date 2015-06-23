@@ -18,10 +18,6 @@ def things():
 def run():
   b=BrooksLaw()
   b.reset()
-  b.run(n=200,report=10)
+  b.start(n=200,report=10)
       #print('%3s) %8.1f %s' % (t,1*x.d, '*' * int(x.d/250)))
 
-
-#@ok
-def run1():
-  for x,v in BrooksLaw().run(200): print(v)
