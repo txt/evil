@@ -3,7 +3,13 @@ from __future__ import print_function
 from __future__ import absolute_import, division
 
 from lib import *
- 
+
+@ok
+def _o():
+  a = o(a=1,b=2)
+  b = a.copy()
+  b['a']=3
+  assert a['a'] != 1
 @ok
 def _misc():
   assert isa({},dict)

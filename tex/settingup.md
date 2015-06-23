@@ -176,7 +176,23 @@ Like any computer scientist, I yearn to use more powerful languages
 like LISP or Javascript or Haskell (Have you tried them? They are _great_ languages!).
 That said,  it has to be said that good looking Python 
 _reads_ pretty
-good-- no ugly brackets, indentation standards enforced by the compiler, simple keywords, etc.
+good-- no ugly brackets, indentation standards enforced by the compiler, simple keywords, etc. As Google's
+chief scientist Peter Norvig says:
+
++ <em>I came to Python not because I thought it was
+  a better/acceptable/pragmatic Lisp, but because it
+  was better pseudocode. Several students claimed
+  that they had a hard time mapping from the
+  pseudocode in my AI textbook to the Lisp code that
+  Russell and I had online. So I looked for the
+  language that was most like our pseudocode, and
+  found that Python was the best match. Then I had
+  to teach myself enough Python to implement the
+  examples from the textbook. I found that Python
+  was very nice for certain types of small problems,
+  and had the libraries I needed to integrate with
+  lots of other stuff, at Google and elsewhere on
+  the net.</em>
 
 Ah, you might reply, but what about other beautiful languages like CoffeeScipt or Scala or insert
 yourFavoriteLanguageHere? It turns out that, at the time of this writing, that there is more tutorial

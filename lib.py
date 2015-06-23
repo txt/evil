@@ -42,6 +42,8 @@ class unittest:
     print(unittest.score(),':',test.__name__, e)
 
 #-------------------------------------------------
+
+now  = datetime.datetime.now
 r    = random.random
 any  = random.choice
 seed = random.seed
@@ -81,7 +83,14 @@ def items(x):
         yield z
   else:
      yield x
-     
+
+def printm(matrix):
+  s = [[str(e) for e in row] for row in matrix]
+  lens = [max(map(len, col)) for col in zip(*s)]
+  fmt = ' | '.join('{{:{}}}'.format(x) for x in lens)
+  for row in [fmt.format(*row) for row in s]:
+    print(row)
+    
 #-------------------------------------------------
 
 def cache(f):
