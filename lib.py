@@ -1,6 +1,6 @@
 from __future__ import print_function
 from __future__ import absolute_import, division
-import random, re, datetime, time,pprint,sys
+import random, re, datetime, time,pprint,sys,math
 from contextlib import contextmanager
 from base import *
 
@@ -48,6 +48,8 @@ r    = random.random
 any  = random.choice
 seed = random.seed
 isa  = isinstance
+sqrt = math.sqrt
+log  = math.log
 fun  = lambda x: x.__class__.__name__ == 'function'
 
 def lt(x,y): return x < y
