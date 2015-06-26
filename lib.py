@@ -51,6 +51,7 @@ isa  = isinstance
 sqrt = math.sqrt
 log  = math.log
 fun  = lambda x: x.__class__.__name__ == 'function'
+milli_time = lambda: int(round(time.time() * 1000))
 
 def lt(x,y): return x < y
 def gt(x,y): return x > y

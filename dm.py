@@ -5,40 +5,6 @@ def weights(m, tiny=2,
             x=lambda z,j: z[j],
             y=lambda z  : z[-1],
             missing="?"):
-  class Nums():
-    def __init__(i,inits=[]):
-      i.n = i.mu = i.m2 = 0
-      map(i.__add__,inits)
-    def span(i) : return i.sd()
-    def sd(i) :
-      return (max(0.0,i.m2)/(i.n - 1))**0.5    
-    def __add__(i,z):
-      i.n  += 1;
-      delta = z - i.mu;
-      i.mu += delta/i.n
-      i.m2 += delta*(z - i.mu)
-    def __sub__(i,z):
-      i.n  -= 1;
-      delta = z - i.mu;
-      if i.n:
-        i.mu -= delta/i.n;
-        i.m2 -= delta*(z - i.mu)
-      else:
-        i.mu = i.m2 = 0
-  class Syms():
-    def __init__(i,inits=[]):
-      i.n, i.cnt = 0, {}
-      map(i.__add__,inits)
-    def span(i) : return i.ent()
-    def ent(i) :
-      e=0
-      for p in [v/i.n for v in i.cnt.values()
-                if v > 0]: e -=  p*log(p,2)
-      return e     
-    def __add__(i,z):
-      i.n  += 1; i.cnt[z]  = i.cnt.get(z,0) + 1
-    def __sub__(i,z):
-      i.n  -= 1; i.cnt[z] -= 1
       
   def divide(this):
     lst = [t[1] for t in this]

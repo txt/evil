@@ -1,47 +1,12 @@
-#!/bib/bash
+#!/bin/bash
 
-quote() {
-     cat - | gawk 'BEGIN {srand('$RANDOM')
-                          FS="\n"; RS=""} 
-                   NR==1 {print "\n"$0"\n"; next}
-                         {a[rand()]=$0} 
-                   END   {for(i in a){print a[i]; exit}}'
-}
-cat<<'EOF' | quote
-
-        _,..---..,_       Welcome to Pie, v1.0
-    ,-"`    .'.    `"-,   (Timm's tricks for a command-line
-   ((      '.'.'      ))   IDE for Python for *Nix/Bash.)
-    `'-.,_   '   _,.-'`    
-jgs   `\  `"""""`  /`     
-        `""-----""`       
-
-"In the pie chart of my brain growing up, 
-there's a huge slice for 'Ghostbusters.'"
--- Evan Goldberg
-
-"The older I get, the more I become an apple 
-pie, sparkling cider kind of guy."
--- Scott Foley
-
-"You can't imagine what satisfaction can be 
-gotten from throwing a pie into someone's face."
--- Emma Thompson
-
-"If you wish to make an apple pie from scratch, 
-you must first invent the universe."
--- Carl Sagan
-
-"So the pie isn't perfect? Cut it into wedges. 
-Stay in control, and never panic."
--- Martha Stewart
-
-"I'm from Maine. I eat apple pie for breakfast."
--- Rachel Nichols
-
-"You can't carve up the world. It's not a pie."
--- Patti Smith
-EOF
+# start with a pithy quote
+cat etc/quotes | gawk '
+   BEGIN {srand('$RANDOM')
+          FS="\n"; RS=""} 
+   NR==1 {print "\n"$0"\n"; next}
+         {a[rand()] = $0} 
+   END   {for(i in a){print a[i]; exit}}' 
 
 ################
 dirsWithPython() {
