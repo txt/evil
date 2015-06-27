@@ -26,18 +26,17 @@ class o:
   def __repr__(i)     : return 'o'+str(i.has())
   
 def sim(state0,life=100,spy=False,dt=1):
-  t0 = t= 0
+  t= 0
   while t < life:
     t += dt
     state1 = state0.copy()
     yield dt, t,state0,state1
+    state0 = state1
     for key in state1.has().keys():
       if state1[key]  < 0:
         state1[key] = 0
     if spy:
-      print(t,state0)
-    state0 = state1
-    t0 = t
+      print(t,state1)
   
 def diapers():
   def saturday(x): return int(x) % 7 == 6
