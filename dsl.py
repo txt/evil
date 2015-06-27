@@ -53,15 +53,8 @@ class Model(object):
   def about(i): return o()
   def whatif(i): return o()
   def stop(i): False
-  def start(i,n=1000,dt=1,report=50,verbose=True,inits={}):
-    eden = i.maybes(i.about(),inits)
-    keys,log  = i.header(eden)
-    for t,v in i.run(eden,n,dt): 
-      if not (t % report) and t > 0:
-        log1 = [round(val(v[k]),1) for k in keys]
-        log += [log1]
-    if verbose: printm(log)
-    return v
+  def start(i): pass
+  def run(i): pass
   def header(i,vars):
     keys = sorted(vars.keys())
     return  keys,[
@@ -82,10 +75,21 @@ class Model(object):
       vars[k].val = tmp
     return vars
   def goals(i):
-    return i.whatif().goals.keys()
+    return i.whatif().goals.items()
   def restrain(i,now,vars):
     for k,v in now.items():
       now[k] = vars[k].restrain(v)
+
+class Simulation(Model):
+  def start(i,n=1000,dt=1,report=50,verbose=True,inits={}):
+    eden = i.maybes(i.about(),inits)
+    keys,log  = i.header(eden)
+    for t,v in i.run(eden,n,dt): 
+      if not (t % report) and t > 0:
+        log1 = [round(val(v[k]),1) for k in keys]
+        log += [log1]
+    if verbose: printm(log)
+    return v
   def run(i,about,n=100,dt=1):
     tnow = about
     t=0
@@ -97,9 +101,9 @@ class Model(object):
       yield t,tnext
       if i.stop(t,tnext):
         break
-      tnow = tnext    
-  
-class BrooksLaw(Model):
+      tnow = tnext
+      
+class BrooksLaw(Simulation):
   def stop(i,t,j):
     return val(j.r) <= 0 or t > 500 
   def whatif(i):

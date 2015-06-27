@@ -57,7 +57,8 @@ def lt(x,y): return x < y
 def gt(x,y): return x > y
 def first(lst): return lst[0]
 def last(lst): return lst[-1]
-                          
+def mean(lst): return sum(lst)/len(lst)
+
 def shuffle(lst):
   random.shuffle(lst)
   return lst

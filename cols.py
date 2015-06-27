@@ -4,7 +4,11 @@ from lib import *
 @setting #########################################
 def COL(): return o(
         cache=256,
-        tiny = 1e-32
+        tiny = 1e-32,
+        dull = [0.147, # small
+                0.33,  # medium
+                0.474 # large
+              ][0] 
 ) ################################################
 
 class Cache:
@@ -31,7 +35,18 @@ class Cache:
                  iqr   = i.all[p*3] - i.all[p]
                 )
     return i._has
-
+  def __ne__(i,j,dull=the.COLS.dull):
+    lt = gt = 0
+    for x in i.all:
+      for y in j.all:
+        if   x > y : gt +=1
+        elif x < y : lt +=1
+    tmp = abs(gt - lt) / (len(i.all)*len(j.all))
+    return tmp > dull
+  def __lt__(i,j,worse=lt):
+    return i != j and worse(i.has().median,
+                            j.has().median)
+  
 class Nums:
   def __init__(i,inits=[],txt=""):
     i.n = i.mu = i.m2 = 0
@@ -41,6 +56,8 @@ class Nums:
   def reset(i):
     i.lo,i.hi,i.cache = 1e32, -1e32,Cache()
   def has(i): return i.cache.has()
+  def norm(i,x):
+    return (x - i.lo) / (i.hi - i.lo + 1e-32)
   def span(i) : return i.sd()
   def sd(i) :
     return (max(0,i.m2)/(i.n-1))**0.5
