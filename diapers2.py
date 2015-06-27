@@ -104,17 +104,15 @@ def printm(matrix):
     print(row)
     
 def sim(world,spy=0):
- 
-  #-- begin ----------
   state0 = world.init()
   log    = Log(world,spy)
   for dt,t in world.duration():
     state0.T = t
+    log   += state0
     state1 = state0.copy()
     yield dt,t,state0,state1
     state1 = world.restrain(state1)
     state0 = state1
-    log   += state1
   log.dump()
   
 def diapers():
