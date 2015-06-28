@@ -1,5 +1,4 @@
 from __future__ import print_function,division
-from contextlib import contextmanager
 
 # duner. using numbers and sample.
 
@@ -44,23 +43,24 @@ class Thing(object):
     elif x > i.hi: return i.hi
     else:
       return x
+  def __repr__(i): return '%s=%s' % (i.name, i.show(i.init))
 
 class Flow(Thing): pass
 class Stock(Thing): pass
 class Aux(Thing): pass
 class Time(Thing):
   def __init__(i,lo=0,hi=1e32,step=1,prec=0):
-    Thing.__init__(name='time',lo=lo,
+    super(Time,i).__init__(name='time',lo=lo,
                    hi=hi,step=step,prec=prec)
 
 F,A,S,T=Flow,Aux,Stock,Time
 
 class Things:
   def __init__(i,**things):
-    i.keys = ['T'] + i.order(things.keys(),'T')
+    i.keys = i.order(things.keys(),'T')
     i.things = things
   def order(i,keys,first):
-    assert first in keys
+    assert first in keys, "state needs time 'T'"
     return [first] + sorted(k for k in keys if k != first)
   def show(i, state):
     return [i.things[k].show(state[k])
@@ -72,7 +72,7 @@ class Things:
     for k,v in state.items():
       thing = i.things[k]
       if   v < thing.lo: state[k] = thing.lo
-      elif v > thing.hi: state[k] = think.hi
+      elif v > thing.hi: state[k] = thing.hi
     return state
   def duration(i):
     assert 'T' in i.things
@@ -93,8 +93,8 @@ class Log:
     return i
   def dump(i):
     if i.log:
-      print("")
-      printm(i.things.keys() + i.log)
+      print("") 
+      printm([i.things.keys] + i.log)
       i.log = []
 
 def printm(matrix):
@@ -126,6 +126,7 @@ class Simulation:
       i.step(dt,t,u,v)
       if i.earlyStop(v):
         break
+    return v
       
 class Diapers(Simulation):
   def things(i): return  Things(
@@ -146,4 +147,4 @@ class Diapers(Simulation):
     if int(t) == 27: # special case (the day i forget)
       v.s = 0
 
-Diapers().run()
+#Diapers().run()
