@@ -55,7 +55,7 @@ class Time(Thing):
 
 F,A,S,T=Flow,Aux,Stock,Time
 
-class World:
+class Things:
   def __init__(i,**things):
     i.keys = ['T'] + i.order(things.keys(),'T')
     i.things = things
@@ -70,9 +70,9 @@ class World:
                 for k,v in i.things.items()})
   def restrain(i,state):
     for k,v in state.items():
-      about = i.things[k]
-      if   v < about.lo: state[k] = about.lo
-      elif v > about.hi: state[k] = about.hi
+      thing = i.things[k]
+      if   v < thing.lo: state[k] = thing.lo
+      elif v > thing.hi: state[k] = think.hi
     return state
   def duration(i):
     assert 'T' in i.things
@@ -83,17 +83,18 @@ class World:
       t0 = t
       
 class Log:
-  def __init__(i,world,steps=20):
-    i.log,i.world,i.steps = [],world,steps
+  def __init__(i,things,steps=20):
+    i.log,i.things,i.steps = [],things,steps
   def __iadd__(i,state):
     if i.steps:
-      i.log += [i.world.show(state)]
+      i.log += [i.things.show(state)]
       if len(i.log) % i.steps == 0:
         i.dump()
     return i
   def dump(i):
     if i.log:
-      printm(i.world.keys() + i.log)
+      print("")
+      printm(i.things.keys() + i.log)
       i.log = []
 
 def printm(matrix):
@@ -103,29 +104,41 @@ def printm(matrix):
   for row in [fmt.format(*row) for row in s]:
     print(row)
     
-def sim(world,spy=0):
-  state0 = world.init()
-  log    = Log(world,spy)
-  for dt,t in world.duration():
+def sim(things,spy=0):
+  state0 = things.init()
+  log    = Log(things,spy)
+  for dt,t in things.duration():
     state0.T = t
     log   += state0
     state1 = state0.copy()
     yield dt,t,state0,state1
-    state1 = world.restrain(state1)
+    state1 = things.restrain(state1)
     state0 = state1
   log.dump()
-  
-def diapers():
-  def saturday(x): return t % 7 == 6
-  this = World(
+
+class Simulation:
+  def things(i):
+    return Things(T= A('time',init=0,lo=0,hi=100))
+  def step(i,dt,t,u,v): pass
+  def earlyStop(i,state): return False
+  def run(i):
+    for dt,t,u,v in sim(i.things(),spy=20):
+      i.step(dt,t,u,v)
+      if i.earlyStop(v):
+        break
+      
+class Diapers(Simulation):
+  def things(i): return  Things(
     T= A('time',           init=0, lo=0, hi=100),
     C= S('clean',          init=20,lo=0, hi=1000),
     D= S('dirty',          init=0, lo=0, hi=1000),
     q= F('new clean',      init=0, lo=0, hi=200),
     r= F('clean2dirty',    init=8, lo=0, hi=100),
     s= F('departing dirty',init=0, lo=0, hi=100)
-  )
-  for dt,t,u,v in sim(this,spy=10):
+    )
+  def step(i,dt,t,u,v):
+    def saturday(t):
+      return t % 7 == 6
     v.C +=  dt*(u.q - u.r)
     v.D +=  dt*(u.r - u.s)
     v.q  =  70  if saturday(t) else 0 
@@ -133,4 +146,4 @@ def diapers():
     if int(t) == 27: # special case (the day i forget)
       v.s = 0
 
-diapers()
+Diapers().run()
