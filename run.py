@@ -39,9 +39,17 @@ class Things:
   def show(i, state):
     return [i.things[k].show(state[k])
             for k in i.keys]
-  def init(i):
-    return o(**{k:v.init
+  def any(i):
+    def any1(v):
+      return round(within(v.lo,v.hi)) if  v.touch else v.init
+    return o(**{k:any1(v)
                 for k,v in i.things.items()})
+  def init(i,d={}):
+    tmp= o(**{k:v.init
+                for k,v in i.things.items()})
+    for k,v in d.items():
+      tmp[k] = v
+    return tmp
   def restrain(i,state):
     for k,v in state.items():
       thing = i.things[k]
@@ -81,10 +89,10 @@ class Simulation:
     return Things(T= A('time',init=0,lo=0,hi=100))
   def step(i,dt,t,u,v): pass
   def earlyStop(i,state): return False
-  def run(i,spy=20):
+  def run(i,spy=20,verbose=True,whatif={}):
     things = i.things()
     log    = Log(things,spy)
-    state0 = things.init()
+    state1 = state0 = things.init(whatif)
     for dt,t in things.duration():
       state0.T = t
       state1 = state0.copy()
@@ -93,6 +101,7 @@ class Simulation:
       state0 = state1
       log += state1
       if i.earlyStop(state1):
-        print("breaking",t)
         break
-    log.dump()
+    if verbose:
+      log.dump()
+    return state1
