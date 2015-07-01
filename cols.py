@@ -35,7 +35,7 @@ class Cache:
                  iqr   = i.all[p*3] - i.all[p]
                 )
     return i._has
-  def __ne__(i,j,dull=the.COLS.dull):
+  def __ne__(i,j,dull=the.COL.dull):
     lt = gt = 0
     for x in i.all:
       for y in j.all:

@@ -50,6 +50,7 @@ seed = random.seed
 isa  = isinstance
 sqrt = math.sqrt
 log  = math.log
+e    = math.e
 fun  = lambda x: x.__class__.__name__ == 'function'
 milli_time = lambda: int(round(time.time() * 1000))
 
@@ -95,7 +96,18 @@ def printm(matrix):
   fmt = ' | '.join('{{:{}}}'.format(x) for x in lens)
   for row in [fmt.format(*row) for row in s]:
     print(row)
-    
+
+def ditto(m,mark="."):
+  def worker(lst):
+    out = []
+    for i,now in enumerate(lst):
+      before = old.get(i,None) # get old it if exists
+      out += [mark if before == now else now]
+      old[i] = now # next time, 'now' is the 'old' value
+    return out # the lst with ditto marks inserted
+  old = {}
+  return [worker(row) for row in m]
+  
 #-------------------------------------------------
 
 def cache(f):

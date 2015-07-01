@@ -31,68 +31,65 @@ def _log():
     True
 
 #ok
-def _diapers():
+def _diapers(): 
   print(222)
   Diapers().run()
 
-#@ok
-def brooks0():
-  b = BrooksLaw()
-  b.run(5,verbose=True,whatif=dict(inc=10))
-   
+#  ts 5.73933090614 5.73933090614
+# ep 22.4757767473 22.4757767473
+# early 67.2864581745 67.2864581745
+# late 72.9962277924 72.9962277924
+# inc 7.0 11.0
+# done! 2015-06-29 08:47:45.962529
+
+"""
+ts 1.18736297658 1.18736297658
+ep 11.6078068745 11.6078068745
+early 69.5446699078 69.5446699078
+late 73.2893699124 73.2893699124
+inc 3.0 4.0
+"""
+ 
 @ok
+def brooks0():  
+  b = BrooksLaw()   
+  b.run(10,verbose=True,whatif=dict(ts=6,ep=2,early=67,late=73,inc=20))
+   
+#@ok
 def _brooks1():
   seed(1)
-  y=0
-  out=None
+  y = 0 
+  out = None
   max = -1
-  for x in xrange(1024):
-    b = BrooksLaw()
+  for x in xrange(104):
+    b = BrooksLaw() 
     d1 = b.things().any()
     d1.inc = round(d1.inc)
     d2 = d1.copy()
-    d2.inc = round(d1.inc*4*r())
-    if d2.inc > d1.inc:
-      v1 = b.run(20,verbose=False ,whatif=d1)
-      v2 = b.run(20,verbose=False ,whatif=d2)
-      t1 = v1.T
-      t2 = v2.T
-      if 0.9*t1 <= t2 <= 1.1*t1:
+    while d2.inc <= d1.inc:
+      d2.inc = round(d1.inc*3*r())
+    v1 = b.run(20,verbose=False ,whatif=d1)
+    v2 = b.run(20,verbose=False ,whatif=d2)
+    t1 = v1.T
+    t2 = v2.T
+    if 0.99*t1 <= t2 <= 1.01*t1:
         if d2.inc - d1.inc > max:
-          max = t2 - t1
+          max = t2 - t1 
           out = (d1,d2)
-        y += 1
+        y += 1 
         say(" ",int(100*y/(x+1)))
-      elif t2 > t1:
+    elif t2 > t1:
         print("\n>>",t1,t2,t2/t1)
         for k,v in b.things().things.items():
           if v.touch:
             print(k,d1[k],d2[k])
-      else:
+    else:
         print("!!",t2/t1)      
   d1,d2 = out
-  #print("\n>>",t1,t2,t2/t1)
   print("")
   for k,v in b.things().things.items():
     if v.touch:
       print(k,d1[k],d2[k])
-    
-#    out += [d1]
- # out = sorted(out,key = lambda x: x["r1"])
-  #for ts in [ 1,2,4,8]:
-   # for ep in [10,20,30]:
-    #  for early in [100]:
-     #   for inc in [1,2,4,8,10]:
-      #    d = dict(early=early,inc=inc,ep=ep,ts=ts)
-       #   v = BrooksLaw().run(20,verbose=False,
-  #                            whatif=d)
-  ###exit()
- # print("")
- # keys = b.things().keys + ["r1"] 
- # def one(s):
-  #  return [s[k] for k in keys]
-  #lst = [keys] + map(one,out[:10]) + map(one,out[-10:-1])
-  #printm(lst)
     
 print("done!",now())
    
