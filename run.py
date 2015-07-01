@@ -117,7 +117,7 @@ class Log:
       if thing1.goal == lt:
          norm = 1 - norm
       sum += norm**2
-    return sqrt(sum)/sqrt(all)
+    return 1 - sqrt(sum)/sqrt(all)
   def __iadd__(i,state):
     for k,v in i.nums.items():
       v += state[k]

@@ -19,7 +19,6 @@ class Kursawe(Function):
 
 def sa(f,kmax=1000,era=25,epsilon =0.01,p=0.25,cooling=0.5,seed=1.0):
   rseed(seed)
-  def moreIsLess(e): return 1 - e
   def p(old,new,t):
     return e**((new-old)/(t+1))
   things = f().things()
@@ -27,14 +26,12 @@ def sa(f,kmax=1000,era=25,epsilon =0.01,p=0.25,cooling=0.5,seed=1.0):
   for k in xrange(era): 
      log.another()
   sb,eb = log.another()
-  eb    = moreIsLess(eb)
   s,e= sb, eb
   for k in xrange(kmax):
     mark="."
     if eb <= epsilon:
       return sb,eb
     sn,en = log.amutant(s,p)
-    en = moreIsLess(en)
     if en < eb:
       sb,eb = sn,en
       say("!")
@@ -59,5 +56,6 @@ def _eval1():
   print("");print(s2);print(e2,e2/e1)
 
 _eval1()
-s,e = sa(Kursawe);print("")
+s,e = sa(Kursawe,kmax=1000,era=25,epsilon =0.01,p=0.33,cooling=0.5,seed=1.0)
+print("")
 print(e)
