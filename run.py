@@ -44,10 +44,8 @@ class Things:
     i.things[thing.name] = thing
     return Things(**i.things)
   def objectives(i,state):
-    print("")
     for k,v in i.objs.items():
       state[k] = v.obj(state)
-      print(k,state[k])
     return state
   def order(i,keys,first):
     pre = [first] if first in keys else []
@@ -100,26 +98,24 @@ class Log:
       return (x - v.lo)/(v.hi - v.lo + -1e32)
     norms = {k:norm(state[k],v)
              for k,v in i.nums.items()}
-  def another(i):
-     x = i.things.objectives(i.things.decisions())
+  def evaluateLogScore(i,state):
+     x = i.things.objectives(state)
      i += x
      return x,i.score(x)
-  def amutant(i,state):
-    x = i.things.mutate(state)
-    i += x
-    return x,i.score(x)
+  def another(i):
+    return i.evaluateLogScore(i.things.decisions())
+  def amutant(i,state,p=0.25):
+    return i.evaluateLogScore(i.things.mutate(state,p))
   def score(i,state):
     sum = all = 0
     for k,v in i.things.objs.items():
-      print(k)
       state1 = state[k]
       num    = i.nums[k]
-      print(":::::",state1,num.lo,num.hi)
       thing1 = i.things.things[k]
       all   += 1
-      norm = (state1 - num.lo)/(num.hi - num.lo + 1e-32)
+      norm = (state1 - num.lo)/(num.hi - num.lo + 0.0001)
       if thing1.goal == lt:
-        norm = 1 - norm
+         norm = 1 - norm
       sum += norm**2
     return sqrt(sum)/sqrt(all)
   def __iadd__(i,state):

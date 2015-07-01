@@ -46,7 +46,7 @@ class unittest:
 now  = datetime.datetime.now
 r    = random.random
 any  = random.choice
-seed = random.seed
+rseed = random.seed
 isa  = isinstance
 sqrt = math.sqrt
 log  = math.log

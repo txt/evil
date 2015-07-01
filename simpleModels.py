@@ -4,12 +4,10 @@ from run import *
 
 class Kursawe(Function):
   def f1(i,state):
-    print("F1")
     return state['0']
   def f2(i,state):
-    print("F2")
     g = 1 + 9 * sum(state[str(x)] for x in range(30))/30
-    return g *round(1- sqrt(state['0']/g))
+    return g * round(1- sqrt(state['0']/g))
   def things(i):
     d =dict(T  = Time(),
             f1 = Aux("f1",obj=i.f1,goal=lt),
@@ -18,37 +16,48 @@ class Kursawe(Function):
       d[str(x)] =  Aux(str(x),lo=0,hi=1,touch=True)
     return Things(**d)
 
-#t = Kursawe().things()
-#for _ in range(10000): 
-#  t.evaluate(t.any())
 
-def sa(f,kmax=10,era=100,epsilon =0.05,p=1):
+def sa(f,kmax=1000,era=25,epsilon =0.01,p=0.25,cooling=0.5,seed=1.0):
+  rseed(seed)
+  def moreIsLess(e): return 1 - e
   def p(old,new,t):
-    print(old,new,t)
     return e**((new-old)/(t+1))
   things = f().things()
   log = Log(things)			     
   for k in xrange(era): 
      log.another()
   sb,eb = log.another()
-  eb = 1 - eb
+  eb    = moreIsLess(eb)
   s,e= sb, eb
   for k in xrange(kmax):
     mark="."
-    if e <= epsilon:
-      return eb,sb
-    sn,en = log.amutant(s)
-    en = 1 - en
-    if (en == eb): print("?")
+    if eb <= epsilon:
+      return sb,eb
+    sn,en = log.amutant(s,p)
+    en = moreIsLess(en)
     if en < eb:
       sb,eb = sn,en
-      mark="!"
+      say("!")
     if en < e:
       s,e = sn,en
-      mark="+"
-    elif p(e,en,k/kmax) < r():
+      mark = "+"
+    elif p(e,en,k/kmax**cooling) < r():
       s,e = sn, en
       mark="?"
     say(mark if k % era else ("\n %.3f %s" % (eb,mark)))
-    
-sa(Kursawe)
+  return sb,eb
+
+def _eval1():
+  f=Kursawe
+  things=f().things()
+  log = Log(things)
+  for _ in xrange(100): log.another()
+  print("========")
+  s1,e1 = log.another()
+  print(s1);print(e1)
+  s2,e2= log.amutant(s1,1)
+  print("");print(s2);print(e2,e2/e1)
+
+_eval1()
+s,e = sa(Kursawe);print("")
+print(e)
