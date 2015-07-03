@@ -93,6 +93,7 @@ class Log:
   def __init__(i,things,steps=20):
     i.log,i.things,i.steps = [],things,steps
     i.nums = {k:Nums() for k in i.things.keys}
+    i.scores = Nums()
   def normalize(i,state):
     def norm(x,v):
       return (x - v.lo)/(v.hi - v.lo + -1e32)
@@ -117,7 +118,8 @@ class Log:
       if thing1.goal == lt:
          norm = 1 - norm
       sum += norm**2
-    return 1 - sqrt(sum)/sqrt(all)
+    s=  1 - sqrt(sum)/sqrt(all) # by convention, lower scores are better
+    return s
   def __iadd__(i,state):
     for k,v in i.nums.items():
       v += state[k]
@@ -129,6 +131,7 @@ class Log:
       m = [i.things.keys] + i.log[0::i.steps]+[i.log[-1]]
       printm(ditto(m," "))
       i.log = []
+  
 
 def printm(matrix):
   s = [[str(e) for e in row] for row in matrix]

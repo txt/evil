@@ -30,9 +30,10 @@ class Cache:
     if not i._has:
       i.all = sorted(i.all)
       p = int(len(i.all)/4)
+      print(">>",p,len(i.all))
       i._has = o(all   = i.all,
-                 median= i.all[p*2],
-                 iqr   = i.all[p*3] - i.all[p]
+                 median= i.all[p*2] if i.all else 0, 
+                 iqr   = i.all[p*3] - i.all[p] if i.all else 0
                 )
     return i._has
   def __ne__(i,j,dull=the.COL.dull):
@@ -43,9 +44,12 @@ class Cache:
         elif x < y : lt +=1
     tmp = abs(gt - lt) / (len(i.all)*len(j.all))
     return tmp > dull
-  def __lt__(i,j,worse=lt):
-    return i != j and worse(i.has().median,
-                            j.has().median)
+  def above(i,j,epsilon=1):
+    if i != j:
+      delta = i.has().median - j.has().median
+      if delta > epsilon:
+        return True
+    return False
   
 class Nums:
   def __init__(i,inits=[],txt=""):
@@ -61,6 +65,8 @@ class Nums:
   def span(i) : return i.sd()
   def sd(i) :
     return (max(0,i.m2)/(i.n-1))**0.5
+  def above(i,j,epsilon=1):
+    return i.cache.biggerThan(j,cache.epsilon)
   def any(i):
     return i.lo + (i.hi - i.lo)* r()
   def __add__(i,z):
