@@ -1,8 +1,8 @@
 from  __future__ import print_function, division
 from lib import *
 from run import *
-
-class Kursawe(Function):
+  
+class ZDT1(Function):
   def f1(i,state):
     return state['0']
   def f2(i,state):
@@ -16,65 +16,67 @@ class Kursawe(Function):
       d[str(x)] =  Aux(str(x),lo=0,hi=1,touch=True)
     return Things(**d)
 
-def keeper(st,objs,now,always,best):
-  st      = objs(st)
-  now    += st
-  always += st
-  score   =  always.score(st)
-  if best is not None and score > best:
-    now.scores += score
-  return st,score
-  
-def sa(f,kmax=1000,era=25,epsilon =0.01,p=0.25,cooling=0.5,seed=1.0):
+def sa(fun,kmax=10000,era=25,epsilon =0.01,p=0.25,cooling=1,seed=None,lives=5):
   eb = None
-  def decs()      : return f.things().decisions()
-  def objs(st)    : return f.things().objectives(st)
-  def mutant(st)  : return f.things().mutate(st,p)
   def p(old,new,t): return e**((new-old)/(t+1))
-  def keep(st)    : return keeper(st,objs,now,always,eb)
-  def baseline(n) : [keep(decs()) for _ in xrange(n)]
+  def objs(st)    : return fun.things().objectives(st)
+  def mutant(st)  : return fun.things().mutate(st,p)
+  def baseline() :
+    for _ in xrange(era): monitored(decs())
   def improving() :
     return last and last.scores.above(now.scores,epsilon)
-  rseed(seed)
-  last, now, always = None, Log(f.things()), Log(f.things())
-  x,y = keep(objs(decs()))
-  print("yyy",y) ; exit()
-  baseline(era)
-  s,e = sb,eb = keep(decs())
-  lives = maxLives = 5
+  def decs() :
+    ok=False
+    while not ok:
+      st = fun.things().decisions()
+      ok = fun.ok(st)
+    return s
+  def scoredRelativeToAllways(st)  :
+    always.add(st)
+    return always.overall(st)
+  def monitored(st): 
+    st = objs(st)
+    now.add(st)
+    score = scoredRelativeToAllways(st)
+    if score < eb:
+      now.scored1(score)
+    return st,score
+  #=======================
+  rseed(seed) 
+  last, now, always = None, Log(fun.things()), Log(fun.things())
+  baseline()
+  life = lives
   k = 0
-
-  print(dict(eb=eb,epsilon=epsilon,lives=lives,k=k,kmax=kmax - era))
-  while k < 50 or (eb > epsilon and lives > 0 and k < kmax - era):
+  s,e = sb,eb = monitored(decs())
+  say("[%2s] %.3f "% (life,eb))
+  while eb > epsilon and life > 0 and k < kmax - era:
     k += 1
-    mark(".")
-    sn,en = keep(mutate(s))
+    mark = "."
+    sn,en = monitored(mutant(s))
     if en < eb:
       sb,eb = sn,en
       say("!")
     if en < e:
-      s,e = sn,en
+      s,e = sn,en 
       mark = "+"
-    elif p(e,en,k/kmax**cooling) < r():
+    elif p(e,en,(k/kmax)**(1/cooling)) < r():
       s,e = sn, en
       mark="?"
-    if k % era:
+    if k % era: 
       say(mark)
     else: 
-      say("\n %.3f %s" % (eb,mark))
-      if k > 1:
-        lives = maxLives if improving else lives - 1
-      i.last = i.now
-      i.now  = Log(f.things())
+      say("\n[%2s] %.3f %s" % (life,eb,mark))
+      life = lives if improving() else life - 1
+      last, now  = now, Log(fun.things())
   return sb,eb
-
+ 
 def _sa():
-  s,e = sa(Kursawe(),kmax=1000,era=100,epsilon =0.001,p=0.33,cooling=0.75,seed=1)
+  s,e = sa(ZDT1(),lives=9,kmax=1000,era=100,epsilon =0.01,p=0.25,cooling=0.1,seed=1)
   print("")
   print(e)
 
 def _eval1():
-  f=Kursawe()
+  f = ZDT1()
   things=f.things()
   log = Log(things)
   for _ in xrange(100): log.another()
@@ -84,6 +86,59 @@ def _eval1():
   s2,e2= log.amutant(s1,1)
   print("");print(s2);print(e2,e2/e1)
 
+
+def de(fun,pop=100,np=10,cf=0.33,f=0.5, kmax=10000,era=25,epsilon =0.01,seed=None,lives=5):
+  eb = None
+  def objs(st)    : return f.things().objectives(st)
+  def mutant(st)  : return f.things().interpolate(any(),any(),any())
+  def baseline() :
+    for _ in xrange(era): monitored(decs())
+  def improving() :
+    return last and last.scores.above(now.scores,epsilon)
+  def decs() : ### how ok needs to be in things
+    ok=False
+    while not ok:
+      st = f.things().decisions()
+      ok = f.ok(st)
+    return s
+  def scoredRelativeToAllways(st)  :
+    always.add(st)
+    return always.overall(st)
+  def monitored(st): 
+    st = objs(st)
+    now.add(st)
+    score = scoredRelativeToAllways(st)
+    if score < eb:
+      now.scored1(score)
+    return st,score
+  #=======================
+  rseed(seed) 
+  last, now, always = None, Log(f.things()), Log(f.things())
+  baseline()
+  life = lives
+  k = 0
+  s,e = sb,eb = monitored(decs())
+  say("[%2s] %.3f "% (life,eb))
+  while eb > epsilon and life > 0 and k < kmax - era:
+    k += 1
+    mark = "."
+    sn,en = monitored(mutant(s))
+    if en < eb:
+      sb,eb = sn,en
+      say("!")
+    if en < e:
+      s,e = sn,en 
+      mark = "+"
+    elif p(e,en,(k/kmax)**(1/cooling)) < r():
+      s,e = sn, en
+      mark="?"
+    if k % era: 
+      say(mark)
+    else: 
+      say("\n[%2s] %.3f %s" % (life,eb,mark))
+      life = lives if improving() else life - 1
+      last, now  = now, Log(f.things())
+  return sb,eb
 
 _eval1()
 _sa()

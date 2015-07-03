@@ -19,6 +19,7 @@ class Thing(object):
     elif x > i.hi: return i.hi
     else:
       return x
+  
   def mutate(i):
     return within(i.lo,i.hi)
   def __repr__(i):
@@ -53,11 +54,23 @@ class Things:
   def show(i, state):
     return [i.things[k].show(state[k])
             for k in i.keys]
+  def interpolate(i,a,b,c,f=0.5,cf=0.5):
+    x=a.copy()
+    messable=[]
+    for k,v in i.decs.items():
+      if v.touch:
+        messable += k
+        if r() < cf:
+          x[k] = a[k] + f*(b[k] - c[k])
+    if messable:
+      x[k] = a[any(messable)]
+    return x
   def mutate(i,state,p= 0.3):
     out = state.copy()
     for k,v in i.decs.items():
-      if r() < p:
-        out[k] =  v.mutate()
+      if v.touch:
+        if r() < p:
+          out[k] =  v.mutate()
     assert out.has().values() != state.has().values()
     return out
   def decisions(i,d={}):
@@ -101,13 +114,13 @@ class Log:
              for k,v in i.nums.items()}
   def evaluateLogScore(i,state):
      x = i.things.objectives(state)
-     i += x
-     return x,i.score(x)
+     i.add(x)
+     return x,i.overall(x)
   def another(i):
     return i.evaluateLogScore(i.things.decisions())
   def amutant(i,state,p=0.25):
     return i.evaluateLogScore(i.things.mutate(state,p))
-  def score(i,state):
+  def overall(i,state):
     sum = all = 0
     for k,v in i.things.objs.items():
       state1 = state[k]
@@ -118,9 +131,11 @@ class Log:
       if thing1.goal == lt:
          norm = 1 - norm
       sum += norm**2
-    s=  1 - sqrt(sum)/sqrt(all) # by convention, lower scores are better
+    s=  1 - sqrt(sum)/sqrt(all) # by convention, lower overall scores are better
     return s
-  def __iadd__(i,state):
+  def scored1(i,n):
+    i.scores += n
+  def add(i,state):
     for k,v in i.nums.items():
       v += state[k]
     if i.steps:
@@ -164,5 +179,6 @@ class Simulation:
 
 class Function:
   def things(i): return Things
+  def ok(i,st):  return True
   def step(i,state): pass
   def earlyStop(i,state): pass

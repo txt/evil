@@ -8,7 +8,7 @@ def COL(): return o(
         dull = [0.147, # small
                 0.33,  # medium
                 0.474 # large
-              ][0] 
+              ][2] 
 ) ################################################
 
 class Cache:
@@ -30,7 +30,6 @@ class Cache:
     if not i._has:
       i.all = sorted(i.all)
       p = int(len(i.all)/4)
-      print(">>",p,len(i.all))
       i._has = o(all   = i.all,
                  median= i.all[p*2] if i.all else 0, 
                  iqr   = i.all[p*3] - i.all[p] if i.all else 0
@@ -45,6 +44,7 @@ class Cache:
     tmp = abs(gt - lt) / (len(i.all)*len(j.all))
     return tmp > dull
   def above(i,j,epsilon=1):
+    if not i.all or not j.all: return False
     if i != j:
       delta = i.has().median - j.has().median
       if delta > epsilon:
@@ -56,7 +56,7 @@ class Nums:
     i.n = i.mu = i.m2 = 0
     i.txt = txt
     i.reset()
-    map(i.__add__,inits)
+    map(i.__iadd__,inits)
   def reset(i):
     i.lo,i.hi,i.cache = 1e32, -1e32,Cache()
   def has(i): return i.cache.has()
@@ -66,10 +66,10 @@ class Nums:
   def sd(i) :
     return (max(0,i.m2)/(i.n-1))**0.5
   def above(i,j,epsilon=1):
-    return i.cache.biggerThan(j,cache.epsilon)
+    return i.cache.above(j.cache,epsilon)
   def any(i):
     return i.lo + (i.hi - i.lo)* r()
-  def __add__(i,z):
+  def __iadd__(i,z):
     i.cache += z
     i.lo  = min(z,i.lo)
     i.hi  = max(z,i.hi)

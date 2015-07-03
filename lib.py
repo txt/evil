@@ -46,7 +46,7 @@ class unittest:
 now  = datetime.datetime.now
 r    = random.random
 any  = random.choice
-rseed = random.seed
+
 isa  = isinstance
 sqrt = math.sqrt
 log  = math.log
@@ -54,6 +54,8 @@ e    = math.e
 fun  = lambda x: x.__class__.__name__ == 'function'
 milli_time = lambda: int(round(time.time() * 1000))
 
+def rseed(seed):
+  if seed is not None: random.seed(seed)
 def lt(x,y): return x < y
 def gt(x,y): return x > y
 def first(lst): return lst[0]
