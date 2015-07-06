@@ -49,3 +49,6 @@ def setting(f):
     return tmp
   wrapper()
   return wrapper
+
+def default(v1,v2):
+  return v2 if v1 is None else v1

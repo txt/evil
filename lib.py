@@ -51,6 +51,8 @@ isa  = isinstance
 sqrt = math.sqrt
 log  = math.log
 e    = math.e
+pi= math.pi
+sin  = math.sin
 fun  = lambda x: x.__class__.__name__ == 'function'
 milli_time = lambda: int(round(time.time() * 1000))
 
@@ -151,7 +153,7 @@ def study(what,*usings):
           "%Y-%m-%d %H:%M:%S"))    
   for (using, override) in usings:
     using(**override)              
-  seed(the.LIB.seed)            
+  rseed(the.LIB.seed)
   show(the)                   
   with duration():
     yield

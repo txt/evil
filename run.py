@@ -12,6 +12,8 @@ class Thing(object):
     i.init,i.goal,i.touch = init,goal,touch
     i.step,i.prec         = step,prec
     i.obj                 = obj
+    if not i.goal and obj != noop:
+      i.goal=lt
   def show(i,x):
     return round(x,i.prec) if i.prec > 0 else int(x)
   def restrain(i,x):
@@ -19,8 +21,7 @@ class Thing(object):
     elif x > i.hi: return i.hi
     else:
       return x
-  
-  def mutate(i):
+  def any(i):
     return within(i.lo,i.hi)
   def __repr__(i):
     return '%s=%s' % (i.name, o(name=i.name,obj=i.obj.__name__,lo=i.lo,hi=i.hi,init=i.init,goal=i.goal,step=i.step,prec=i.prec,touch=i.touch))
@@ -36,10 +37,11 @@ class Time(Thing):
 F,A,S,T=Flow,Aux,Stock,Time
 
 class Things:
-  def __init__(i,**things):
+  def __init__(i,ok=lambda z: True, **things):
     i.keys = i.order(things.keys(),'T')
     i.objs = {k:v for k,v in things.items() if v.goal}
     i.decs = {k:v for k,v in things.items() if not v.goal}
+    i.ok   = ok
     i.things = things
   def __iadd__(i,thing):
     i.things[thing.name] = thing
@@ -54,34 +56,6 @@ class Things:
   def show(i, state):
     return [i.things[k].show(state[k])
             for k in i.keys]
-  def interpolate(i,a,b,c,f=0.5,cf=0.5):
-    x=a.copy()
-    messable=[]
-    for k,v in i.decs.items():
-      if v.touch:
-        messable += k
-        if r() < cf:
-          x[k] = a[k] + f*(b[k] - c[k])
-    if messable:
-      x[k] = a[any(messable)]
-    return x
-  def mutate(i,state,p= 0.3):
-    out = state.copy()
-    for k,v in i.decs.items():
-      if v.touch:
-        if r() < p:
-          out[k] =  v.mutate()
-    assert out.has().values() != state.has().values()
-    return out
-  def decisions(i,d={}):
-    def decision(k,v):
-      if v.touch:
-        v = d[k].any1() if v in d else within(v.lo,v.hi)
-      elif not v.goal:
-        v = v.init
-      return v
-    return o(**{k:decision(k,v)
-                for k,v in i.decs.items()})
   def init(i,d={}):
     tmp= o(**{k:v.init
                 for k,v in i.things.items()})
@@ -101,7 +75,48 @@ class Things:
       t += i.things['T'].step
       yield t - t0, t
       t0 = t
-      
+
+def smear(things,a,b,c,f=0.5,cf=0.5,cxt={},go=1):
+  assert go < 10,('%s too goes' % go)
+  z=a.copy()
+  messable=[]
+  for k,v in things.decs.items():
+    if v.touch:
+      if k in cxt:
+         z[k] = cxt[k].any()
+      else:
+         messable += k
+         if r() < cf:
+           z[k] = a[k] + f*(b[k] - c[k])
+  if messable:
+     z[k] = a[any(messable)]
+  return z if things.ok(z) else smear(things, a,b,c,f,cf,
+                                     cxt,go+1)
+
+def mutate(things,st,cxt={},p= 0.3,go=1):
+  assert go < 10,('%s too many goes' % go)
+  z = st.copy()
+  for k,v in things.decs.items():
+    if v.touch:
+      if k in cxt:
+        z[k] = cxt[k].any()
+      elif r() < p:
+        z[k] =  v.any()
+  return z if things.ok(z) else mutate(things,st,p,go+1)
+
+def decisions(things,cxt={},go=1):
+  assert go < 10,('%s too many goes' % go)
+  z=o()
+  for k,v in things.decs.items():
+    if v.touch:
+      if k in cxt:
+        z[k] = cxt[k].any()
+      else: 
+        z[k] = v.any() 
+    elif not v.goal:
+      z[k] = v.init
+  return z if things.ok(z) else decisions(things,d,go+1)
+
 class Log:
   def __init__(i,things,steps=20):
     i.log,i.things,i.steps = [],things,steps
@@ -133,8 +148,6 @@ class Log:
       sum += norm**2
     s=  1 - sqrt(sum)/sqrt(all) # by convention, lower overall scores are better
     return s
-  def scored1(i,n):
-    i.scores += n
   def add(i,state):
     for k,v in i.nums.items():
       v += state[k]
@@ -146,7 +159,6 @@ class Log:
       m = [i.things.keys] + i.log[0::i.steps]+[i.log[-1]]
       printm(ditto(m," "))
       i.log = []
-  
 
 def printm(matrix):
   s = [[str(e) for e in row] for row in matrix]
@@ -179,6 +191,5 @@ class Simulation:
 
 class Function:
   def things(i): return Things
-  def ok(i,st):  return True
   def step(i,state): pass
   def earlyStop(i,state): pass
