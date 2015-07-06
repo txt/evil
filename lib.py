@@ -65,6 +65,9 @@ def last(lst): return lst[-1]
 def mean(lst): return sum(lst)/len(lst)
 
 def within(lo,hi): return lo + (hi - lo)*r()
+def wrap(x,lo,hi):
+  return x if x==hi else lo + (x - lo) % (hi - lo)
+
 def shuffle(lst):
   random.shuffle(lst)
   return lst
