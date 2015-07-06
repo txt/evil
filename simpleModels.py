@@ -139,6 +139,7 @@ def DE(): return o(
 def de(fun, f=None, cf=None, pop=None, kmax=None,
             epsilon=None, cxt=None,
             lives=None, verbose=None):
+  eb  = 1e32
   def any1(): st,_ = any(all); return st
   def decs()      : return decisions(fun.things(),cxt)
   def mutant()    : return smear(fun.things(),
@@ -153,6 +154,8 @@ def de(fun, f=None, cf=None, pop=None, kmax=None,
     always.add(st)
     score = always.overall(st)
     now.scores += score
+    if score < eb:
+      score = eb
     return st,score
   #=======================
   last, now, always = None, Log(fun.things()), Log(fun.things())
@@ -160,7 +163,6 @@ def de(fun, f=None, cf=None, pop=None, kmax=None,
   k = 0
   era =  pop*len(fun.things().decs)
   all = [seen(decs())] * era
-  eb  = 1e32
   while True:
     if eb < epsilon  : verbose and say("="); break
     if life < 1      : verbose and say("x"); break
@@ -173,7 +175,6 @@ def de(fun, f=None, cf=None, pop=None, kmax=None,
        if (score < score0):
          more += 1
          all[pos] = child
-       eb = min(eb,score0,score)
     if k % era: 
       if verbose: say(" ",more)
     else: 
