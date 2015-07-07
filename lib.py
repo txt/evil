@@ -73,14 +73,14 @@ def shuffle(lst):
   return lst
 
 def ntiles(lst, tiles=[0.1,0.3,0.5,0.7,0.9],
-                norm=False, f=3):
+                norm=False, f=3,ordered=True):
+  if not ordered:
+    lst = sorted(lst)
   if norm:
     lo,hi = lst[0], lst[-1]
-    lst= g([(x - lo)/(hi-lo+0.0001) for x in lst],f)
+    lst= [(x - lo)/(hi-lo+0.0001) for x in lst]
   at = lambda x: lst[ int(len(lst)*x) ]
-  lst = [ at(tile) for tile in tiles ]
-  
-  return lst
+  return g([ at(tile) for tile in tiles ],f)
 
 def say(*lst):
   sys.stdout.write(', '.join(map(str,lst)))

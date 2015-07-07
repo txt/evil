@@ -125,10 +125,11 @@ def decisions(cells,cxt={},go=1):
   return it if cells.ok(it) else decisions(cells,d,go+1)
 
 class Haves:
-  def __init__(i,cells,steps=20):
-    i.log,i.cells,i.steps = [],cells,steps
+  def __init__(i,cells):
+    i.log,i.cells = [],cells
     i.nums = {k:Nums() for k in i.cells.keys}
     i.scores = Nums()
+    i.seen = {}
   def normalize(i,it):
     def norm(x,v):
       return (x - v.lo)/(v.hi - v.lo + -1e32)
@@ -142,7 +143,7 @@ class Haves:
     return i.evaluateLogScore(i.cells.decisions())
   def amutant(i,it,p=0.25):
     return i.evaluateLogScore(i.cells.mutate(it,p))
-  def aggregate(i,it):
+  def aggregate(i,it,at,kth):
     sum = all = 0
     for k,v in i.cells.objs.items():
       it1 = it[k]
@@ -150,20 +151,25 @@ class Haves:
       has1 = i.cells.cells[k]
       all   += 1
       norm = (it1 - num.lo)/(num.hi - num.lo + 0.0001)
-      if has1.goal == lt:
-         norm = 1 - norm
-      sum += norm**2
-    s=  1 - sqrt(sum)/sqrt(all) # by convention, lower aggregate scores are better
-    return s
-  def add(i,it):
+      assert 0 <= norm <=1,'normalization failure'
+      worst = 1 if has1.goal == lt else 0
+      sum += (norm-worst)**2
+    e =  1 - sqrt(sum)/sqrt(all+0.00001) # by convention, lower aggregate scores are better
+   
+    return e
+  def __div__(i,j):
+    def diff(k):
+      a,b = i.nums[k], j.nums[k]
+      return int(100*a/b)
+    return {k:diff(k) for k,_ in i.cells.items()}
+  def add(i,it,kth):
     for k,v in i.nums.items():
       v += it[k]
-    if i.steps:
-      i.log += [i.cells.show(it)]
+    i.seen[kth] = (e,it)
     return i
-  def dump(i):
-    if i.log:
-      m = [i.cells.keys] + i.log[0::i.steps]+[i.log[-1]]
+  def dump(i,steps):
+    if i.seen:
+      m = [i.cells.keys] + i.seen[0::steps]+[i.seen[-1]]
       printm(ditto(m," "))
       i.log = []
 
