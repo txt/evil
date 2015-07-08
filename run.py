@@ -129,21 +129,15 @@ class Haves:
     i.log,i.cells = [],cells
     i.nums = {k:Nums() for k in i.cells.keys}
     i.scores = Nums()
-    i.seen = {}
+    i.seen = []
   def normalize(i,it):
     def norm(x,v):
       return (x - v.lo)/(v.hi - v.lo + -1e32)
     norms = {k:norm(it[k],v)
              for k,v in i.nums.items()}
-  def evaluateLogScore(i,it):
-     x = i.cells.objectives(it)
-     i.add(x)
-     return x,i.aggregate(x)
-  def another(i):
-    return i.evaluateLogScore(i.cells.decisions())
-  def amutant(i,it,p=0.25):
-    return i.evaluateLogScore(i.cells.mutate(it,p))
-  def aggregate(i,it,at,kth):
+  def above(i,j,epsilon):
+    return i.scores.above(j.scores,epsilon)
+  def aggregate(i,it):
     sum = all = 0
     for k,v in i.cells.objs.items():
       it1 = it[k]
@@ -155,7 +149,7 @@ class Haves:
       worst = 1 if has1.goal == lt else 0
       sum += (norm-worst)**2
     e =  1 - sqrt(sum)/sqrt(all+0.00001) # by convention, lower aggregate scores are better
-   
+    i.scores += e
     return e
   def __div__(i,j):
     def diff(k):
@@ -165,13 +159,25 @@ class Haves:
   def add(i,it,kth):
     for k,v in i.nums.items():
       v += it[k]
-    i.seen[kth] = (e,it)
     return i
   def dump(i,steps):
     if i.seen:
       m = [i.cells.keys] + i.seen[0::steps]+[i.seen[-1]]
       printm(ditto(m," "))
       i.log = []
+  def best(i):
+    return sorted(i.seen)[0]
+  
+"""
+ def xevaluateLogScore(i,it):
+     x = i.cells.objectives(it)
+     i.add(x)
+     return x,i.aggregate(x)
+  def xanother(i):
+    return i.evaluateLogScore(i.cells.decisions())
+  def xamutant(i,it,p=0.25):
+    return i.evaluateLogScore(i.cells.mutate(it,p))
+"""
 
 def printm(matrix):
   s = [[str(e) for e in row] for row in matrix]
@@ -181,8 +187,11 @@ def printm(matrix):
     print(row)
 
 
-
-class Simulation:
+class Model(object):
+  def __init__(i):
+    i.have=i.cells()
+    
+class Simulation(Model):
   def cells(i):
     return Have(T= A('time',init=0,lo=0,hi=100))
   def step(i,dt,t,u,v): pass
@@ -204,7 +213,7 @@ class Simulation:
       log.dump()
     return it1
 
-class Function:
+class Function(Model):
   def cells(i): return Have()
   def step(i,it): pass
   def earlyStop(i,it): pass

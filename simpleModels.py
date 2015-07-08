@@ -2,17 +2,12 @@ from  __future__ import print_function, division
 from lib import *
 from run import *
 
-
-
 def testcnl(x):
   def f(x) : return x**2 + 3*x + 1
   def g(x) : return 3*x + 3
   return abs(f(x) - g(x))
 
-
-
 class CurveAndLine(Function):
-  
   def cells(i):
     return Have(T  = Time(),
                 x  = Aux('x',lo=-4,hi=4,touch=True),
@@ -79,75 +74,74 @@ def sa(fun,**overrides):
 
 def sa1(fun, p=None, cooling=None,kmax=None,
             epsilon=None, cxt=None, era=None,
-            lives=None, verbose=None,all=None):
-  eb = None
-  def p(old,new,t): return e**((new-old)/(t+1))
-  def decs()      : return decisions(fun.cells(),cxt)
-  def mutant(it)  : return mutate(fun.cells(),it,cxt,p)
-  def objs(it)    : return fun.cells().objectives(it)
-  def baseline(k=0)  :
-    gen0=[]
-    for _ in xrange(era):
-      k += 1
-      gen0 +=[seen(decs(),k)]
-    return k,gen0
-  def log(log0=None): return log0 or Haves(fun.cells())
-  def improving() :
-    return last and last.scores.above(now.scores,epsilon)
+            lives=None, verbose=None,all=None):  
+  def p(old,new,t)  : return e**((new-old)/(t+1))
+  def decs()        : return decisions(fun.have,cxt)
+  def mutant(it)    : return mutate(fun.have,it,cxt,p)
+  def objs(it)      : return fun.have.objectives(it)
+  def log()         : return Haves(fun.have)
+  def goodbye(info) :
+    print("L",len(now.seen))
+    fyi(info); return now,all
+  def fyi(x)        : verbose and say(x)
+  def improving()   : return last.above(now,epsilon)
+  def baseline()    :
+    gen0= [seen(decs(),k)for k in xrange(era)]
+    return era ,gen0
   def seen(it,k):
     it = objs(it)
     now.add(it,k)
     all.add(it,k)
-    score = all.aggregate(it,"sa",k)
-    now.scores += score
-    return it,score
+    e = all.aggregate(it)
+    now.seen += [(e,it,k)]
+    return it,e
   #=======================
-  eb = 1e32
-  last, now, all  = None, log(), log(all)
+  eb  = 1e32
+  all = all or log()
+  now = log()
   k,_ = baseline()
+  last, now  = now, log()
   life = lives
+  k   += 1
   s,e = sb,eb = seen(decs(),k)
-  if verbose:
-    say("%4s [%2s] %.3f "% (k,life,eb))
+  fyi("%4s [%2s] %.3f "% (k,life,eb))
   while True:
-    if eb < epsilon: verbose and say("="); return now,all
-    if life < 1    : verbose and say("x"); return last,all
-    if k > kmax    : verbose and say("0"); return now,all
+    info = "."
     k += 1
-    mark = "."
     sn,en = seen(mutant(s),k)
     if en < eb:
-      if verbose: say("\033[7m!\033[m")
+      fyi("\033[7m!\033[m")
       sb,eb = sn,en
     if en < e:
       s,e = sn,en 
-      mark = "+"
+      info = "+"
     elif p(e,en,(k/kmax)**(1/cooling)) < r():
       s,e = sn, en
-      mark="?"
+      info="?"
     if k % era: 
-      if verbose: say(mark)
+      if verbose: say(info)
     else: 
-      if verbose:
-        say("\n%4s [%2s] %.3f %s" % (k,life,eb,mark))
       life = lives if improving() else life - 1
+      if eb < epsilon: return goodbye("=")
+      if life < 1    : return goodbye("x")
+      if k > kmax    : return goodbye("0")
+      fyi("\n%4s [%2s] %.3f %s" % (k,life,eb,info))
       last, now  = now, log()
-      
-
+  
 # acoid repeated calls to cells
  
 def _sa0():
   # if i added cxt, worse final scores
    show(the)
-   klass = CurveAndLine
-   for seed in [1,2,3,4,5,7,8,9,10]:
-     fun = klass()
-     all = Haves(fun.cells())
+   what = CurveAndLine
+   for seed in [1]: #,2,3,4,5,7,8,9,10]:
+     fun = what()
+     all = None
      for opt in [sa]:
          rseed(seed)
          print("")
-         now,all = opt(fun,all=all,era=50,epsilon=0.0001,verbose=True)
-         say("\n%s\n" % [len(now.seen.values()),len(all.seen.values())])
+         now,all = opt(fun,all=all,era=100,epsilon=0.0001,verbose=True)
+         say("\n==> eb %s sb %s k %s\n" % now.best())
          #print(opt.__name__,'seed:',seed,out[0].x,
           #     out[1:])
 
@@ -178,21 +172,21 @@ def DE(): return o(
     epsilon=0.01, cxt={}, 
     lives=9, verbose=False)
 
-def de(fun,**overrides):
+def de(cells,**overrides):
   options = the.DE
   options += overrides
-  return de1(fun,**options)
+  return de1(cells,**options)
 
-def de1(fun, f=None, cr=None, pop=None, kmax=None,
+def de1(cells, f=None, cr=None, pop=None, kmax=None,
             epsilon=None, cxt=None,
             lives=None, verbose=None):
   eb  = 1e32
   def any1(): it,_ = any(all); return it
-  def decs()      : return decisions(fun.cells(),cxt)
-  def mutant()    : return crossover(fun.cells(),
+  def decs()      : return decisions(cells,cxt)
+  def mutant()    : return crossover(cells,
                                  any1(),any1(), any1(),
                                  f=f,cr=cr,cxt=cxt)
-  def objs(it)    : return fun.cells().objectives(it)
+  def objs(it)    : return cells.objectives(it)
   def improving() :
     return last and last.scores.above(now.scores,epsilon)
   def seen(it): 
@@ -202,11 +196,11 @@ def de1(fun, f=None, cr=None, pop=None, kmax=None,
     now.scores += score
     return it,score
   #=======================
-  last, now  = None, Haves(fun.cells())
+  last, now  = None, Haves(cells)
   life = lives
   k = 0
   bestk = 0
-  era =  pop*len(fun.cells().decs)
+  era =  pop*len(cells.decs)
   all = [seen(decs()) for _ in xrange(era)]
   while True:
     if eb < epsilon  : verbose and say("="); break
@@ -230,7 +224,7 @@ def de1(fun, f=None, cr=None, pop=None, kmax=None,
       if verbose:
         say("\n[%2s] %.3f %s" % (life,eb,mark))
       life = lives if improving() else life - 1
-      last, now  = now, Haves(fun.cells())
+      last, now  = now, Haves(cells)
   return sb,eb,bestk,k
 
 #smeagin
