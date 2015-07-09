@@ -74,12 +74,15 @@ def shuffle(lst):
 
 def ntiles(lst, tiles=[0.1,0.3,0.5,0.7,0.9],
                 norm=False, f=3,ordered=True):
+  def pos(x):
+    return len(lst) - 1 if x == 1 else int(len(lst)*x)
+  assert len(lst) > len(tiles),"list too small"
   if not ordered:
     lst = sorted(lst)
   if norm:
     lo,hi = lst[0], lst[-1]
     lst= [(x - lo)/(hi-lo+0.0001) for x in lst]
-  at = lambda x: lst[ int(len(lst)*x) ]
+  at = lambda x: lst[ pos(x) ]
   return g([ at(tile) for tile in tiles ],f)
 
 def say(*lst):

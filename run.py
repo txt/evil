@@ -130,6 +130,8 @@ class Haves:
     i.nums = {k:Nums() for k in i.cells.keys}
     i.scores = Nums()
     i.seen = []
+    i.n = 0
+    i.first = None
   def normalize(i,it):
     def norm(x,v):
       return (x - v.lo)/(v.hi - v.lo + -1e32)
@@ -138,6 +140,7 @@ class Haves:
   def above(i,j,epsilon):
     return i.scores.above(j.scores,epsilon)
   def aggregate(i,it):
+    i.n += 1
     sum = all = 0
     for k,v in i.cells.objs.items():
       it1 = it[k]
@@ -150,12 +153,14 @@ class Haves:
       sum += (norm-worst)**2
     e =  1 - sqrt(sum)/sqrt(all+0.00001) # by convention, lower aggregate scores are better
     i.scores += e
+   
     return e
-  def __div__(i,j):
-    def diff(k):
-      a,b = i.nums[k], j.nums[k]
-      return int(100*a/b)
-    return {k:diff(k) for k,_ in i.cells.items()}
+  def drift(i):
+    lo0,hi0 = i.first
+    lo1 = i.scores.lo
+    hi1 = i.scores.hi
+    return lo0,lo1,hi0, hi1
+  
   def add(i,it,kth):
     for k,v in i.nums.items():
       v += it[k]

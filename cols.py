@@ -8,7 +8,7 @@ def COL(): return o(
         dull = [0.147, # small
                 0.33,  # medium
                 0.474 # large
-              ][2] 
+              ][0] 
 ) ################################################
 
 class Cache:
@@ -88,7 +88,10 @@ class Nums:
     else:
       i.mu = i.m2 = 0
     return i
-  
+  def ntiles(i, tiles=[0.01,0.25,0.5,0.75,0.99],
+             norm=False, f=3,ordered=False):
+    return i.lo,ntiles(i.cache.all,tiles,norm,f,ordered),i.hi
+    
 class Syms():
   def __init__(i,inits=[]):
     i.n, i.cnt = 0, {}
