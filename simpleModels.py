@@ -11,7 +11,7 @@ print(testcnl(-1.39356))
 
 class CurveAndLine(Function):
   def cells(i):
-    return Have(T  = Time(),
+    return Have(#T  = Time(),
                 x  = Aux('x',lo=-4,hi=4,touch=True),
                 f = Aux("f",obj=lambda st: testcnl(st.x),
                             goal=lt,lo=-20,hi=20))
@@ -58,6 +58,15 @@ class DTLZ7(Function):
     return Have(**d)
 #tip: every new model is a big deal. new pony to ride. or, at least, to debug
 
+def boolDom(_,fun,it1,e1,it2,e2):
+  return fun.have.boolDom(it1,it2)
+
+def lessEnergy(_,fun,it1,e1,it2,e2):
+  return e1 < e2
+
+def contDom(always,fun,it1,e1,it2,e2):
+  return fun.have.contDom(always.nums,it1,it2)
+ 
 @setting
 def SA(): return o(
     p=0.25,
@@ -67,6 +76,7 @@ def SA(): return o(
     cxt={},
     era=100,
     lives=5,
+    better=lessEnergy,
     verbose=False)
 
 def sa(fun,**overrides):
@@ -75,12 +85,12 @@ def sa(fun,**overrides):
   return sa1(fun,**the.SA)
 
 def sa1(fun, p=None, cooling=None,
-             kmax=None,epsilon=None, cxt=None, era=None,
-             lives=None, verbose=None,all=None):    
+             kmax=None,epsilon=None, cxt=None, era=None, better=None,
+             lives=None, verbose=None):    
   def decs()        : return decisions(fun.have,cxt)
   def objs(it)      : return fun.have.objectives(it)
   def log()         : return Haves(fun.have)
-  def goodbye(info) : fyi(info); return now,all
+  def goodbye(info) : fyi(info); return now
   def fyi(x)        : verbose and say(x)
   def improving()   : return last.above(now,epsilon)
   def baseline()    :
@@ -89,15 +99,14 @@ def sa1(fun, p=None, cooling=None,
   def seen(it):
     it = objs(it)
     now.add(it,k)
-    all.add(it,k)
-    e = all.aggregate(it)
+    always.add(it,k)
+    e = always.aggregate(it)
     now.seen += [(e,it,k)]
     return k+1,it, e
-  k,eb  = 1, 1e32
-  life = lives
-  now, all = log(), all or log()
-  k,frontier = baseline()
-  last, now  = now, log()
+  k, life, eb = 1, lives, 1e32
+  now, always = log(), log()
+  k,frontier  = baseline()
+  last, now   = now, log()
   #=======================
   def p(old,new,t)  : return e**((new-old)/(t+1))
   def mutant(it)    : return mutate(fun.have,it,cxt,p)
@@ -126,30 +135,25 @@ def sa1(fun, p=None, cooling=None,
       last, now  = now, log() 
   
 # acoid repeated calls to cells
- 
+
+
+
 def _sa0():
-  # if i added cxt, worse final scores
-  show(the)
-  what = CurveAndLine
-  results = results0 = now = all = None
-  for opt in [de,sa]:
-    print("\n %s ",opt.__name__)
-    for seed in [1,2,3,4,5,7,8,9,10]:
-      fun = what()
-      rseed(seed)
-      now,all = opt(fun,all=all,era=50,epsilon=0.01,verbose=True)
-      results = {key:v.ntiles(ordered=False)
-                 for key,v in now.nums.items()
-                 if key in fun.have.objs}
-      results0 = results0 or results 
-      print("\n")
-  for k in results0:
-    print(k,results0[k])
-    print(k,results[k])
-   #print(":drift",all.drift())
-   
-# thou shalt print the options active in each run
-# thou shalt disable all prints with a "verbose=False" flag
+  n = lambda z:z.__name__
+  what = ZDT1
+  last = results = None
+  for opt in [de]:
+    for better in [lessEnergy,boolDom,contDom]:
+      print("\n %s : %s " % (opt.__name__,better.__name__))
+      for seed in [1,2,3,4,5,7,8,9,10]:
+        fun = what()
+        rseed(seed)
+        last    = opt(fun,era=50,epsilon=0.001,better=better,verbose=False)
+      #print(last.scores.ntiles())
+        for k,v in last.nums.items():
+          if k[0] == 'f':
+            print("%s-%s-%s-%s" % (n(what),k,n(opt),n(better)))
+            for x in v.cache.all: print(" %s" % x)
 
 def _sa1():
   # if i added cxt, worse final scores
@@ -159,6 +163,9 @@ def _sa1():
      rseed(1)
      s,e=sa(ZDT1(),**the.SA)
 
+    
+#f (0.1009110604332113, [0.101, 0.621, 1.407, 1.933, 2.904], 3.4072182909724873)
+#f (0.025561542674170656, [0.026, 0.515, 1.167, 1.881, 7.625], 7.624727551437976)
 
 def _sa2():
   # if i added cxt, worse final scores
@@ -174,6 +181,7 @@ def _sa2():
 @setting
 def DE(): return o(
     f=0.5, cr=0.3, pop=10, kmax=10000,
+    better=lessEnergy,
     epsilon=0.01, cxt={}, 
     lives=9, verbose=False)
 
@@ -182,13 +190,15 @@ def de(fun,**overrides):
   options += overrides
   return de1(fun,**options)
 
+
 def de1(fun, f=None, cr=None, pop=None,
+             better = None,
              kmax=None, epsilon=None, cxt=None, era=None,
-             lives=None, verbose=None, all=None):
+             lives=None, verbose=None):
   def decs()       : return decisions(fun.have,cxt)
   def objs(it)     : return fun.have.objectives(it)
   def log()        : return Haves(fun.have)
-  def goodbye(info): fyi(info); return now,all
+  def goodbye(info): fyi(info); return now
   def fyi(x)       : verbose and say(x)
   def improving()  : return last.above(now,epsilon)
   def baseline()   :
@@ -197,13 +207,12 @@ def de1(fun, f=None, cr=None, pop=None,
   def seen(it): 
     it = objs(it)
     now.add(it,k)
-    all.add(it,k)
-    e  = all.aggregate(it)
+    always.add(it,k)
+    e  = always.aggregate(it)
     now.seen += [(e,it,k)]
     return k+1, it,e
-  k,eb  = 1, 1e32
-  life = lives
-  now, all = log(), all or log()
+  k, life, eb = 1, lives, 1e32
+  now, always = log(),log()
   k,frontier = baseline()
   last,now= now,log()
   #=======================
@@ -217,7 +226,7 @@ def de1(fun, f=None, cr=None, pop=None,
        info = "."
        _,parent,e = frontier[pos]
        k,child,en = seen(mutant(any1(),any1(),any1()))
-       if (en < e):
+       if better(always,fun,child,en,parent,e): 
          info = "+"
          frontier[pos] = k,child,en
        if en < eb:

@@ -79,7 +79,30 @@ class Have:
       t += i.cells['T'].step
       yield t - t0, t
       t0 = t
-
+  def boolDom(i,it1,it2):
+    ok = bad = 0
+    for k,v in i.objs.items():
+      better = v.goal
+      x = it1[k]
+      y = it2[k]
+      if better(x,y) or x == y:
+        ok += 1
+      else:
+        return False
+    return ok > 0
+  def contDom(i,nums,it1,it2): #it1 better than it2"
+    objs = i.objs
+    o    = len(objs)
+    def loss1(k,v,x,y):
+      x1 = nums[k].norm(x[k])
+      y1 = nums[k].norm(x[k])
+      w  = 1 if v.goal == lt else -1
+      return -1*(e**(w*(x1 - y1)/o))/o
+    def loss(x,y):
+      assert o >= 1,"no objectives found"
+      return sum(loss1(k,v,x,y) for k,v in objs.items())
+    return loss(it2,it1) > loss(it1,it2)
+  
 def crossover(cells,a,b,c,f=0.5,cr=0.5,cxt={},go=1):
   assert go < 16,('%s too goes' % go)
   it=a.copy()
@@ -153,14 +176,7 @@ class Haves:
       sum += (norm-worst)**2
     e =  1 - sqrt(sum)/sqrt(all+0.00001) # by convention, lower aggregate scores are better
     i.scores += e
-   
     return e
-  def drift(i):
-    lo0,hi0 = i.first
-    lo1 = i.scores.lo
-    hi1 = i.scores.hi
-    return lo0,lo1,hi0, hi1
-  
   def add(i,it,kth):
     for k,v in i.nums.items():
       v += it[k]
@@ -172,7 +188,35 @@ class Haves:
       i.log = []
   def best(i):
     return sorted(i.seen)[0]
-  
+
+def testCont():
+  def worker():
+    objs= ((0,"lt"),(1,"gt"),(2,"lt"))
+    it2 = [r() for _ in range(3)]
+    it1 = [None for _ in it2]
+    for k,v in objs:
+      if v == 'lt':
+        it1[k] = it2[k]/r()
+      else:
+        it1[k] = it2[k]*r()
+    o = len(objs)
+    def loss(x,y):
+      total = 0
+      for k,v in objs:
+        x1 = x[k]
+        y1 = y[k]
+        w = 1 if v == 'lt' else -1
+        total -= e**((w*(x1 - y1)/o))/o
+      #print(total)
+      return total
+    def bt(x,y):
+      return loss(x,y) > loss(y,x)
+    #print(it2)
+    #print(it1)
+    say(bt(it2,it1))
+  for _ in range(1000): worker()
+
+#testCont()
 """
  def xevaluateLogScore(i,it):
      x = i.cells.objectives(it)
